@@ -1,48 +1,29 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import * as React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {Provider} from 'react-redux';
+import {RootStackParamList} from './src/types';
+import store from './src/store';
+import HomeScreen from './src/screens/Home';
+import RegisterScreen from './src/screens/Register';
+import LoginScreen from './src/screens/Login';
+import DashboardScreen from './src/screens/Dashboard';
 
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+const RootStack = createStackNavigator<RootStackParamList>();
 
+function App() {
   return (
-    <SafeAreaView>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={[styles.appTitleView]}>
-          <Text style={styles.appTitleText}> Bucketize </Text>
-        </View>
-
-        <View>
-          <Text style={styles.appText}> Welcome! </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <Provider store={store}>
+      <NavigationContainer>
+        <RootStack.Navigator initialRouteName="Home">
+          <RootStack.Screen name="Home" component={HomeScreen} />
+          <RootStack.Screen name="Register" component={RegisterScreen} />
+          <RootStack.Screen name="Login" component={LoginScreen} />
+          <RootStack.Screen name="Dashboard" component={DashboardScreen} />
+        </RootStack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
-};
-
-const styles = StyleSheet.create({
-  appTitleView: {
-    marginTop: 20,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  appTitleText: {
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  appText: {
-    fontSize: 18,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-});
+}
 
 export default App;
