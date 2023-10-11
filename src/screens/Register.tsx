@@ -13,7 +13,7 @@ import {
 import DatePicker from 'react-native-date-picker';
 // import {RegisterScreenRouteProp} from '../types';
 import {handleRegister} from '../services/userService';
-import {CreateUser} from '../models/users';
+import {CreateUser} from '../models/user';
 
 const RegisterScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';

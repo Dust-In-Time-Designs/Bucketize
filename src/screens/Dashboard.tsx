@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {useSelector} from 'react-redux';
 import {
   SafeAreaView,
   ScrollView,
@@ -8,11 +9,19 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import {State} from '../store/reducers';
+import LogoutButton from '../components/logoutButton';
 import {DashboardScreenRouteProp} from '../types';
 
-const DashboardScreen = ({route}: DashboardScreenRouteProp) => {
+const DashboardScreen = ({navigation}: DashboardScreenRouteProp) => {
   const isDarkMode = useColorScheme() === 'dark';
-  const {userId} = route.params;
+  const {user} = useSelector((state: State) => state.auth);
+  useEffect(() => {
+    if (!user) {
+      navigation.navigate('Home');
+    }
+  }, [user]);
+
   return (
     <SafeAreaView>
       <StatusBar
@@ -22,7 +31,11 @@ const DashboardScreen = ({route}: DashboardScreenRouteProp) => {
       />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View>
-          <Text style={styles.appText}> Welcome User {userId}! </Text>
+          <Text style={styles.appText}>
+            {' '}
+            {user && `Welcome ${user.firstName} ${user.lastName}!`}{' '}
+          </Text>
+          <LogoutButton />
         </View>
       </ScrollView>
     </SafeAreaView>

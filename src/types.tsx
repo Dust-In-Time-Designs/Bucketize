@@ -4,7 +4,7 @@ export type RootStackParamList = {
   Home: undefined;
   Register: undefined;
   Login: undefined;
-  Dashboard: {userId: string};
+  Dashboard: undefined;
 };
 
 export type HomeScreenRouteProp = NativeStackScreenProps<

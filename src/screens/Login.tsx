@@ -9,10 +9,13 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
 import {LoginScreenRouteProp} from '../types';
 import {handleLogin} from '../services/userService';
+import {authAction} from '../store/actions';
 
 const LoginScreen = ({navigation}: LoginScreenRouteProp) => {
+  const dispatch = useDispatch();
   const isDarkMode = useColorScheme() === 'dark';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +23,8 @@ const LoginScreen = ({navigation}: LoginScreenRouteProp) => {
   const onSubmit = async () => {
     const user = await handleLogin(email, password);
     if (user) {
-      navigation.navigate('Dashboard', {userId: user.user.id});
+      dispatch(authAction.loginUser(user));
+      navigation.navigate('Dashboard');
     } else {
       console.log('error');
     }
@@ -51,9 +55,9 @@ const LoginScreen = ({navigation}: LoginScreenRouteProp) => {
           />
           <Button
             onPress={onSubmit}
-            title="Register"
+            title="Login"
             color="#841584"
-            accessibilityLabel="Register for Bucketize"
+            accessibilityLabel="Login"
           />
         </View>
       </ScrollView>

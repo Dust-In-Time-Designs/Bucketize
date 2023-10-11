@@ -8,12 +8,10 @@ export type CreateUser = {
 };
 
 export type User = {
-  id: number;
-  userId: string;
+  id: string;
   firstName: string;
   lastName: string;
-  password: string;
-  email: string;
+  email: string | undefined;
   phoneNumber: string;
   birthday: Date;
 };
