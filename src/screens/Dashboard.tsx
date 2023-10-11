@@ -1,20 +1,12 @@
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {State} from '../store/reducers';
 import LogoutButton from '../components/logoutButton';
 import {DashboardScreenRouteProp} from '../types';
+import PlaidService from '../components/plaidLink';
 
 const DashboardScreen = ({navigation}: DashboardScreenRouteProp) => {
-  const isDarkMode = useColorScheme() === 'dark';
   const {user} = useSelector((state: State) => state.auth);
   useEffect(() => {
     if (!user) {
@@ -24,17 +16,13 @@ const DashboardScreen = ({navigation}: DashboardScreenRouteProp) => {
 
   return (
     <SafeAreaView>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor="#61dafb"
-        // hidden={hidden}
-      />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View>
           <Text style={styles.appText}>
             {' '}
             {user && `Welcome ${user.firstName} ${user.lastName}!`}{' '}
           </Text>
+          <PlaidService />
           <LogoutButton />
         </View>
       </ScrollView>

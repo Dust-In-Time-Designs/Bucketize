@@ -1,7 +1,6 @@
-import {AUTH_LOGIN, AUTH_LOGOUT} from '../types';
+import {PLAID_TOKEN} from '../types';
 
 const initialState = {
-  user: null,
   accessToken: '',
   itemId: '',
 };
@@ -13,13 +12,10 @@ type Action = {
 
 export default (state: any = initialState, action: Action) => {
   switch (action.type) {
-    case AUTH_LOGIN:
+    case PLAID_TOKEN:
       return Object.assign({}, state, {
-        user: action.payload,
-      });
-    case AUTH_LOGOUT:
-      return Object.assign({}, state, {
-        user: null,
+        accessToken: action.payload,
+        itemId: action.payload.itemId,
       });
     default:
       return state;

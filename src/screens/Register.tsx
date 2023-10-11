@@ -3,11 +3,9 @@ import {
   Button,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
@@ -16,7 +14,6 @@ import {handleRegister} from '../services/userService';
 import {CreateUser} from '../models/user';
 
 const RegisterScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -49,11 +46,6 @@ const RegisterScreen = () => {
 
   return (
     <SafeAreaView>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor="#61dafb"
-        // hidden={hidden}
-      />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View>
           <TextInput

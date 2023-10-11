@@ -3,10 +3,8 @@ import {
   Button,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
 import {useSelector} from 'react-redux';
@@ -15,11 +13,9 @@ import {State} from '../store/reducers';
 import DashboardScreen from './Dashboard';
 
 const HomeScreen = ({navigation}: HomeScreenRouteProp) => {
-  const isDarkMode = useColorScheme() === 'dark';
   const {user} = useSelector((state: State) => state.auth);
   return (
     <SafeAreaView>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={[styles.appTitleView]}>
           <Text style={styles.appTitleText}> Bucketize </Text>

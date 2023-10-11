@@ -3,10 +3,8 @@ import {
   Button,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   TextInput,
-  useColorScheme,
   View,
 } from 'react-native';
 import {useDispatch} from 'react-redux';
@@ -16,7 +14,6 @@ import {authAction} from '../store/actions';
 
 const LoginScreen = ({navigation}: LoginScreenRouteProp) => {
   const dispatch = useDispatch();
-  const isDarkMode = useColorScheme() === 'dark';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -32,11 +29,6 @@ const LoginScreen = ({navigation}: LoginScreenRouteProp) => {
 
   return (
     <SafeAreaView>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor="#61dafb"
-        // hidden={hidden}
-      />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View>
           <TextInput
