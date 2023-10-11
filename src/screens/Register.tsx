@@ -11,16 +11,16 @@ import {
   View,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import {RegisterScreenRouteProp} from '../types';
-import {addUser} from '../services/userService';
+// import {RegisterScreenRouteProp} from '../types';
+import {handleRegister} from '../services/userService';
 import {CreateUser} from '../models/users';
-import {getDBConnection} from '../services/db-service';
 
-const RegisterScreen = ({route, navigation}: RegisterScreenRouteProp) => {
+const RegisterScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [birthday, setBirthday] = useState(new Date());
   const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -31,15 +31,15 @@ const RegisterScreen = ({route, navigation}: RegisterScreenRouteProp) => {
   };
 
   const onSubmit = async () => {
-    const db = await getDBConnection();
     const user: CreateUser = {
       firstName,
       lastName,
       email,
       phoneNumber,
       birthday,
+      password,
     };
-    const newUser = await addUser(db, user);
+    const newUser = await handleRegister(user);
     if (newUser) {
       console.log(newUser);
     } else {
@@ -74,6 +74,13 @@ const RegisterScreen = ({route, navigation}: RegisterScreenRouteProp) => {
             value={email}
             placeholder="Email"
             keyboardType="email-address"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={setPassword}
+            value={password}
+            placeholder="password"
+            secureTextEntry={true}
           />
           <TextInput
             style={styles.input}

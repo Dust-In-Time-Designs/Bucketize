@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -9,26 +8,21 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import {HomeScreenRouteProp} from '../types';
+import {DashboardScreenRouteProp} from '../types';
 
-const HomeScreen = ({navigation}: HomeScreenRouteProp) => {
+const DashboardScreen = ({route}: DashboardScreenRouteProp) => {
   const isDarkMode = useColorScheme() === 'dark';
-
+  const {userId} = route.params;
   return (
     <SafeAreaView>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor="#61dafb"
+        // hidden={hidden}
+      />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={[styles.appTitleView]}>
-          <Text style={styles.appTitleText}> Bucketize </Text>
-        </View>
-
         <View>
-          <Text style={styles.appText}> Welcome! </Text>
-          <Button
-            title="Register"
-            onPress={() => navigation.navigate('Register')}
-          />
-          <Button title="Login" onPress={() => navigation.navigate('Login')} />
+          <Text style={styles.appText}> Welcome User {userId}! </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -50,6 +44,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
+  input: {
+    width: '50%',
+  },
 });
 
-export default HomeScreen;
+export default DashboardScreen;
