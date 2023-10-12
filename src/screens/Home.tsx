@@ -11,8 +11,10 @@ import {useSelector} from 'react-redux';
 import {HomeScreenRouteProp} from '../types';
 import {State} from '../store/reducers';
 import DashboardScreen from './Dashboard';
+import {useNavigation} from '@react-navigation/native';
 
-const HomeScreen = ({navigation}: HomeScreenRouteProp) => {
+const HomeScreen = () => {
+  const navigation = useNavigation<HomeScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
   return (
     <SafeAreaView>

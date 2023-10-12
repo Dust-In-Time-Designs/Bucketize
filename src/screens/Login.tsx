@@ -11,9 +11,11 @@ import {useDispatch} from 'react-redux';
 import {LoginScreenRouteProp} from '../types';
 import {handleLogin} from '../services/userService';
 import {authAction} from '../store/actions';
+import {useNavigation} from '@react-navigation/native';
 
-const LoginScreen = ({navigation}: LoginScreenRouteProp) => {
+const LoginScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation<LoginScreenRouteProp>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 

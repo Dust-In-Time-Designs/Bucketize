@@ -4,14 +4,17 @@ import {PlaidLink} from 'react-native-plaid-link-sdk';
 import {useDispatch} from 'react-redux';
 import {PlaidAuth} from '../models/user';
 import {plaidAction} from '../store/actions';
+import {API_URL} from '@env';
+import {PlaidScreenRouteProp} from '../types';
+import {useNavigation} from '@react-navigation/native';
 
-function PlaidService({navigation}) {
+const PlaidScreen = () => {
+  const navigation: PlaidScreenRouteProp = useNavigation();
   const dispatch = useDispatch();
-  const address = 'localhost';
   const [linkToken, setLinkToken] = useState(null);
 
   const createLinkToken = useCallback(async () => {
-    await fetch(`http://${address}:8080/api/create_link_token`, {
+    await fetch(`http://${API_URL}:8080/api/create_link_token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +43,7 @@ function PlaidService({navigation}) {
             noLoadingState: false,
           }}
           onSuccess={async success => {
-            await fetch(`http://${address}:8080/api/set_access_token`, {
+            await fetch(`http://${API_URL}:8080/api/set_access_token`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -53,6 +56,8 @@ function PlaidService({navigation}) {
                   accessToken: data.access_token,
                   itemId: data.item_id,
                 };
+                console.log(data);
+
                 dispatch(plaidAction.getPlaidToken(accessInformation));
               })
               .catch(err => {
@@ -65,7 +70,7 @@ function PlaidService({navigation}) {
           }}>
           <View style={styles.button}>
             <Text style={{color: '#fff', fontWeight: '600', fontSize: 20}}>
-              Launch Wallet
+              Connect Bank Accounts
             </Text>
             <Image source={require('../assets/next.png')} />
           </View>
@@ -73,9 +78,9 @@ function PlaidService({navigation}) {
       </View>
     </View>
   );
-}
+};
 
-export default PlaidService;
+export default PlaidScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

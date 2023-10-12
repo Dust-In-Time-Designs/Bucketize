@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-// import {RegisterScreenRouteProp} from '../types';
 import {handleRegister} from '../services/userService';
 import {CreateUser} from '../models/user';
 

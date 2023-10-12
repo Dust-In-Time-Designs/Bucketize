@@ -9,8 +9,10 @@ import HomeScreen from './src/screens/Home';
 import RegisterScreen from './src/screens/Register';
 import LoginScreen from './src/screens/Login';
 import DashboardScreen from './src/screens/Dashboard';
+import WalletDetailsScreen from './src/screens/WalletDetails';
+import PlaidScreen from './src/screens/Plaid';
 
-const RootStack = createStackNavigator<RootStackParamList>();
+export const RootStack = createStackNavigator<RootStackParamList>();
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -24,6 +26,11 @@ function App() {
           <RootStack.Screen name="Register" component={RegisterScreen} />
           <RootStack.Screen name="Login" component={LoginScreen} />
           <RootStack.Screen name="Dashboard" component={DashboardScreen} />
+          <RootStack.Screen name="Plaid" component={PlaidScreen} />
+          <RootStack.Screen
+            name="WalletDetails"
+            component={WalletDetailsScreen}
+          />
         </RootStack.Navigator>
       </NavigationContainer>
     </Provider>

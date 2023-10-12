@@ -4,15 +4,17 @@ import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {State} from '../store/reducers';
 import LogoutButton from '../components/logoutButton';
 import {DashboardScreenRouteProp} from '../types';
-import PlaidService from '../components/plaidLink';
+import PlaidScreen from './Plaid';
+import {useNavigation} from '@react-navigation/native';
 
-const DashboardScreen = ({navigation}: DashboardScreenRouteProp) => {
+const DashboardScreen = () => {
+  const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
   useEffect(() => {
     if (!user) {
       navigation.navigate('Home');
     }
-  }, [user]);
+  }, [navigation, user]);
 
   return (
     <SafeAreaView>
@@ -22,7 +24,7 @@ const DashboardScreen = ({navigation}: DashboardScreenRouteProp) => {
             {' '}
             {user && `Welcome ${user.firstName} ${user.lastName}!`}{' '}
           </Text>
-          <PlaidService />
+          <PlaidScreen />
           <LogoutButton />
         </View>
       </ScrollView>
