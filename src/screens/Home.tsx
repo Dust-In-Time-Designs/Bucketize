@@ -5,7 +5,7 @@ import {HomeScreenRouteProp} from '../types';
 import {State} from '../store/reducers';
 import DashboardScreen from './Dashboard';
 import {useNavigation} from '@react-navigation/native';
-import {accent1, light} from '../constants';
+import {colorStyles} from '../constants';
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenRouteProp>();
@@ -21,14 +21,14 @@ const HomeScreen = () => {
             <Button
               title="Register"
               onPress={() => navigation.navigate('Register')}
-              color={accent1}
+              color={colorStyles.secondaryText}
             />
           </View>
           <View style={styles.buttonContainer}>
             <Button
               title="Login"
               onPress={() => navigation.navigate('Login')}
-              color={accent1}
+              color={colorStyles.mainText}
             />
           </View>
         </View>
@@ -41,7 +41,7 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   homeContainer: {
-    backgroundColor: accent1,
+    backgroundColor: colorStyles.background,
     flex: 1,
     paddingVertical: 10,
     // justifyContent: 'center',
@@ -51,13 +51,14 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   buttonContainer: {
-    backgroundColor: light,
-    width: '20%',
+    backgroundColor: colorStyles.secondaryAccent,
+    width: '30%',
     borderRadius: 5,
     paddingVertical: 5,
-    marginVertical: 10,
+    margin: 10,
   },
   appTitleView: {
     marginTop: 20,
@@ -67,13 +68,13 @@ const styles = StyleSheet.create({
   appTitleText: {
     fontSize: 24,
     fontWeight: '800',
-    color: light,
+    color: colorStyles.mainText,
   },
   appText: {
     fontSize: 18,
     fontWeight: '500',
     textAlign: 'center',
-    color: light,
+    color: colorStyles.minorAccent,
   },
 });
 

@@ -11,25 +11,20 @@ import LoginScreen from './src/screens/Login';
 import DashboardScreen from './src/screens/Dashboard';
 import WalletDetailsScreen from './src/screens/WalletDetails';
 import PlaidScreen from './src/screens/Plaid';
-import {accent1} from './src/constants';
+import {colorStyles} from './src/constants';
 
 export const RootStack = createStackNavigator<RootStackParamList>();
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
     <Provider store={store}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor="#0c0e2c"
-      />
+      <StatusBar barStyle={'light-content'} />
       <NavigationContainer>
         <RootStack.Navigator
           initialRouteName="Home"
           screenOptions={{
             headerStyle: {
-              backgroundColor: accent1,
+              backgroundColor: colorStyles.mainAccent,
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
