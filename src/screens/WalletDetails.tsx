@@ -4,7 +4,7 @@ import Transactions from '../components/transactions';
 import Balance from '../components/balance';
 // import {WalletDetailsScreenRouteProp} from '../types';
 // import { useNavigation } from '@react-navigation/native';
-import { colorStyles } from '../styles';
+import {colorStyles} from '../styles';
 
 const WalletDetailsScreen = () => {
   // const navigation = useNavigation<WalletDetailsScreenRouteProp>();

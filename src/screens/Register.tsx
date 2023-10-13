@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSelector} from 'react-redux';
 import {Button, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {handleRegister} from '../services/userService';
@@ -7,10 +9,11 @@ import {colorStyles, styles} from '../styles';
 import HorizontalRuleWithText from '../components/horizontalRule';
 import {RegisterScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
+import {State} from '../store/reducers';
 
 const RegisterScreen = () => {
   const navigation = useNavigation<RegisterScreenRouteProp>();
-
+  const {authUser} = useSelector((state: State) => state.auth);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -20,6 +23,14 @@ const RegisterScreen = () => {
   const [birthdaySelected, setBirthdaySelected] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [error, setError] = useState('');
+
+  const getAuthUser = async () => {
+    const jsonValue = await AsyncStorage.getItem(
+      'sb-pkotgkvsnarjmufqcwxj-auth-token',
+    );
+
+    console.log(jsonValue != null ? JSON.parse(jsonValue) : null);
+  };
 
   const parseBirthday = (date: Date) => {
     const monthDay = date.toString().split(' ');
@@ -42,6 +53,14 @@ const RegisterScreen = () => {
       setError('Please fill out all fields');
     }
   };
+
+  useEffect(() => {
+    getAuthUser();
+
+    if (authUser) {
+      navigation.navigate('Dashboard');
+    }
+  }, [navigation, authUser]);
 
   return (
     <View style={styles.screenContainerLight}>

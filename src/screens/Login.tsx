@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSelector} from 'react-redux';
 import {Button, Text, TextInput, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {LoginScreenRouteProp} from '../types';
@@ -7,13 +9,23 @@ import {authAction} from '../store/actions';
 import {useNavigation} from '@react-navigation/native';
 import {colorStyles, styles} from '../styles';
 import HorizontalRuleWithText from '../components/horizontalRule';
+import {State} from '../store/reducers';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<LoginScreenRouteProp>();
+  const {authUser} = useSelector((state: State) => state.auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const getAuthUser = async () => {
+    const jsonValue = await AsyncStorage.getItem(
+      'sb-pkotgkvsnarjmufqcwxj-auth-token',
+    );
+
+    console.log(jsonValue != null ? JSON.parse(jsonValue) : null);
+  };
 
   const onSubmit = async () => {
     const user = await handleLogin(email, password);
@@ -24,6 +36,14 @@ const LoginScreen = () => {
       setError('Invalid Credentials');
     }
   };
+
+  useEffect(() => {
+    getAuthUser();
+
+    if (authUser) {
+      navigation.navigate('Dashboard');
+    }
+  }, [navigation, authUser]);
 
   return (
     <View style={styles.screenContainerLight}>

@@ -57,6 +57,7 @@ function App() {
             component={DashboardScreen}
             options={{
               title: '',
+              headerShown: false,
             }}
           />
           <RootStack.Screen

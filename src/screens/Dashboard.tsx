@@ -6,14 +6,15 @@ import LogoutButton from '../components/logoutButton';
 import {DashboardScreenRouteProp} from '../types';
 import PlaidScreen from './Plaid';
 import {useNavigation} from '@react-navigation/native';
-import { styles } from '../styles';
+import {styles} from '../styles';
 
 const DashboardScreen = () => {
   const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
+  console.log(user);
   useEffect(() => {
     if (!user) {
-      navigation.navigate('Home');
+      navigation.navigate('Register');
     }
   }, [navigation, user]);
 

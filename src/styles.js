@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     alignItems: 'center',
+    width: '100%',
   },
   screenContainerLight: {
     backgroundColor: colorStyles.mainText,
@@ -67,6 +68,7 @@ export const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '800',
     color: colorStyles.secondaryAccent,
+    textAlign: 'center',
   },
   appText: {
     fontSize: 18,
