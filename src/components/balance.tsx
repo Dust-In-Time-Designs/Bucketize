@@ -1,9 +1,10 @@
 import React, {useCallback, useState, useEffect} from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {View, Text, FlatList} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useSelector} from 'react-redux';
 import {State} from '../store/reducers';
 import {API_URL} from '@env';
+import {colorStyles, styles} from '../styles';
 
 const Balance = () => {
   const [data, setData] = useState(null);
@@ -27,19 +28,19 @@ const Balance = () => {
 
   const renderItem = ({item}) => {
     return (
-      <View style={styles.cardContainer}>
+      <View style={styles.balanceCardContainer}>
         <LinearGradient
-          colors={['#F5BCE9', '#C7F0FC']}
+          colors={[colorStyles.mainAccent, colorStyles.mainText]}
           end={{x: 0.9, y: 0.2}}
-          style={styles.gradientCard}>
-          <View style={styles.card}>
-            <View style={styles.type}>
+          style={styles.balanceGradientCard}>
+          <View style={styles.balanceCard}>
+            <View style={styles.balanceType}>
               <View>
                 <Text
                   style={{fontSize: 12, fontWeight: '600', color: '#1E1E2D'}}>
                   Account Name
                 </Text>
-                <Text style={styles.text}>{item.name}</Text>
+                <Text style={styles.balanceText}>{item.name}</Text>
               </View>
 
               <View>
@@ -47,11 +48,11 @@ const Balance = () => {
                   style={{fontSize: 12, fontWeight: '600', color: '#1E1E2D'}}>
                   Type
                 </Text>
-                <Text style={styles.text}>{item.subtype}</Text>
+                <Text style={styles.balanceText}>{item.subtype}</Text>
               </View>
             </View>
 
-            <View style={styles.available}>
+            <View style={styles.balanceAvailable}>
               <Text
                 style={{
                   fontSize: 30,
@@ -61,7 +62,7 @@ const Balance = () => {
                 $ {item.balances?.available}
               </Text>
 
-              <Text style={styles.text}>
+              <Text style={styles.balanceText}>
                 Current: ${item.balances?.current}
               </Text>
             </View>
@@ -91,57 +92,5 @@ const Balance = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: 'row',
-    marginVertical: 5,
-    backgroundColor: '#1E1E2D',
-    borderRadius: 10,
-    height: 100,
-  },
-  textView: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#1E1E2D',
-    fontSize: 10,
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    marginBottom: 5,
-  },
-  cardContainer: {
-    width: 200,
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginRight: 20,
-    height: 100,
-  },
-  card: {
-    flexDirection: 'column',
-    height: '100%',
-  },
-  gradientCard: {
-    height: 150,
-    width: '100%',
-  },
-  available: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    height: '70%',
-  },
-  type: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '30%',
-    paddingHorizontal: 10,
-  },
-});
 
 export default Balance;

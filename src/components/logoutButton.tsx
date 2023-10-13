@@ -1,9 +1,9 @@
 import React from 'react';
-import {Button} from 'react-native';
+import {Button, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {handleLogout} from '../services/userService';
 import {authAction} from '../store/actions';
-
+import {colorStyles, styles } from '../styles';
 const LogoutButton = () => {
   const dispatch = useDispatch();
   const onLogout = async () => {
@@ -16,12 +16,14 @@ const LogoutButton = () => {
   };
 
   return (
-    <Button
-      onPress={onLogout}
-      title="Logout"
-      color="#841584"
-      accessibilityLabel="Logout"
-    />
+    <View style={styles.buttonContainer}>
+      <Button
+        onPress={onLogout}
+        title="Logout"
+        color={colorStyles.mainText}
+        accessibilityLabel="Logout"
+      />
+    </View>
   );
 };
 

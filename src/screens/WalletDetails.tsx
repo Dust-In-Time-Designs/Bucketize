@@ -4,6 +4,7 @@ import Transactions from '../components/transactions';
 import Balance from '../components/balance';
 // import {WalletDetailsScreenRouteProp} from '../types';
 // import { useNavigation } from '@react-navigation/native';
+import { colorStyles } from '../styles';
 
 const WalletDetailsScreen = () => {
   // const navigation = useNavigation<WalletDetailsScreenRouteProp>();
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   heading: {
-    color: '#fff',
+    color: colorStyles.secondaryAccent,
     fontSize: 20,
     fontWeight: '600',
   },

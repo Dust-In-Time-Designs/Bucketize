@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, Text, Image} from 'react-native';
 import {PlaidLink} from 'react-native-plaid-link-sdk';
 import {useDispatch} from 'react-redux';
 import {PlaidAuth} from '../models/user';
@@ -7,6 +7,7 @@ import {plaidAction} from '../store/actions';
 import {API_URL} from '@env';
 import {PlaidScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
+import {colorStyles, styles} from '../styles';
 
 const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
@@ -35,8 +36,7 @@ const PlaidScreen = () => {
     }
   }, [linkToken]);
   return (
-    // <View style={styles.container}>
-    <View style={styles.buttonContainer}>
+    <View style={styles.plaidButtonContainer}>
       <PlaidLink
         tokenConfig={{
           token: linkToken,
@@ -68,46 +68,13 @@ const PlaidScreen = () => {
         onExit={response => {
           console.log(response);
         }}>
-        <View style={styles.button}>
-          <Text style={{color: '#fff', fontWeight: '600', fontSize: 20}}>
-            Connect Bank Accounts
-          </Text>
+        <View style={styles.plaidButton}>
+          <Text style={styles.plaidButtonText}>Connect Bank Accounts</Text>
           <Image source={require('../assets/next.png')} />
         </View>
       </PlaidLink>
     </View>
-    // </View>
   );
 };
 
 export default PlaidScreen;
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-  },
-  textView: {
-    width: '100%',
-    paddingVertical: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  textStyle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  buttonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '80%',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-    paddingVertical: 15,
-    backgroundColor: '#42b883',
-    borderRadius: 10,
-  },
-});

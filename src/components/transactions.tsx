@@ -3,6 +3,7 @@ import {View, Text, FlatList, StyleSheet, Image} from 'react-native';
 import {useSelector} from 'react-redux';
 import {State} from '../store/reducers';
 import {API_URL} from '@env';
+import { colorStyles } from '../styles';
 
 const Transactions = () => {
   const [transactionData, setTransactionData] = useState(null);
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     marginVertical: 5,
-    backgroundColor: '#1E1E2D',
+    backgroundColor: colorStyles.mainAccent,
     borderRadius: 10,
     height: 100,
   },
