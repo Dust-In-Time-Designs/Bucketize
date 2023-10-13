@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {State} from '../store/reducers';
 import LogoutButton from '../components/logoutButton';
 import {DashboardScreenRouteProp} from '../types';
@@ -17,26 +17,28 @@ const DashboardScreen = () => {
   }, [navigation, user]);
 
   return (
-    <SafeAreaView>
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View>
-          <Text style={styles.appText}>
-            {' '}
-            {user && `Welcome ${user.firstName} ${user.lastName}!`}{' '}
-          </Text>
-          <PlaidScreen />
-          <LogoutButton />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.dashboardContainer}>
+      <Text style={styles.dashboardTitle}>
+        {' '}
+        {user && `Welcome ${user.firstName} ${user.lastName}!`}{' '}
+      </Text>
+      <PlaidScreen />
+      <LogoutButton />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  appTitleView: {
+  dashboardContainer: {
+    flex: 1,
+    height: 100,
+    backgroundColor: '#fcfcf9',
+  },
+  dashboardTitle: {
     marginTop: 20,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    textAlign: 'center',
+    fontSize: 24,
+    color: 'white',
   },
   appTitleText: {
     fontSize: 24,

@@ -11,6 +11,7 @@ import LoginScreen from './src/screens/Login';
 import DashboardScreen from './src/screens/Dashboard';
 import WalletDetailsScreen from './src/screens/WalletDetails';
 import PlaidScreen from './src/screens/Plaid';
+import {accent1} from './src/constants';
 
 export const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -19,10 +20,29 @@ function App() {
 
   return (
     <Provider store={store}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor="#0c0e2c"
+      />
       <NavigationContainer>
-        <RootStack.Navigator initialRouteName="Home">
-          <RootStack.Screen name="Home" component={HomeScreen} />
+        <RootStack.Navigator
+          initialRouteName="Home"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: accent1,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}>
+          <RootStack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              title: '',
+            }}
+          />
           <RootStack.Screen name="Register" component={RegisterScreen} />
           <RootStack.Screen name="Login" component={LoginScreen} />
           <RootStack.Screen name="Dashboard" component={DashboardScreen} />
