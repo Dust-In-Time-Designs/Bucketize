@@ -1,65 +1,32 @@
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {Text, View} from 'react-native';
 import {State} from '../store/reducers';
 import LogoutButton from '../components/logoutButton';
 import {DashboardScreenRouteProp} from '../types';
+import PlaidScreen from './Plaid';
+import {useNavigation} from '@react-navigation/native';
+import {styles} from '../styles';
 
-const DashboardScreen = ({navigation}: DashboardScreenRouteProp) => {
-  const isDarkMode = useColorScheme() === 'dark';
+const DashboardScreen = () => {
+  const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
+  console.log(user);
   useEffect(() => {
     if (!user) {
-      navigation.navigate('Home');
+      navigation.navigate('Register');
     }
-  }, [user]);
+  }, [navigation, user]);
 
   return (
-    <SafeAreaView>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor="#61dafb"
-        // hidden={hidden}
-      />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View>
-          <Text style={styles.appText}>
-            {' '}
-            {user && `Welcome ${user.firstName} ${user.lastName}!`}{' '}
-          </Text>
-          <LogoutButton />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.screenContainer}>
+      <Text style={styles.appTitleText}>
+        {user && `Welcome ${user.firstName} ${user.lastName}!`}
+      </Text>
+      <PlaidScreen />
+      <LogoutButton />
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  appTitleView: {
-    marginTop: 20,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  appTitleText: {
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  appText: {
-    fontSize: 18,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  input: {
-    width: '50%',
-  },
-});
 
 export default DashboardScreen;

@@ -15,3 +15,8 @@ export type User = {
   phoneNumber: string;
   birthday: Date;
 };
+
+export type PlaidAuth = {
+  accessToken: string;
+  itemId: string;
+};
