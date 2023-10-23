@@ -14,6 +14,7 @@ export type User = {
   email: string | undefined;
   phoneNumber: string;
   birthday: Date;
+  accessToken: string;
 };
 
 export type PlaidAuth = {

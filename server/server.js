@@ -7,11 +7,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const moment = require('moment');
 const cors = require('cors');
+const supabaseClient = require('@supabase/supabase-js');
 
 const APP_PORT = process.env.APP_PORT || 8080;
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
 const PLAID_ENV = process.env.PLAID_ENV || 'sandbox';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 // Link. Note that this list must contain 'assets' in order for the app to be
@@ -86,6 +89,35 @@ app.post('/api/info', function (request, response, next) {
   });
 });
 
+// app.post('/api/users/login', function (request, response, next) {
+//   Promise.resolve().then(async function () {
+//     const {email, password} = request.body;
+//     const {data, error} = await supabase.supabaseClient.auth.signInWithPassword(
+//       {
+//         email,
+//         password,
+//       },
+//     );
+//   });
+// });
+
+app.post('/api/users/accounts', function (request, response, next) {
+  const dbClient = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    global: {headers: request.headers.authorization},
+  });
+
+  Promise.resolve().then(async function () {
+    const session = await dbClient.auth.getSession();
+    console.log('session: ', session);
+
+    const {data, error} = await dbClient
+      .from('accounts')
+      .insert([request.body])
+      .select();
+    console.log(error, data);
+    return error;
+  });
+});
 // Create a link token with configs which we can then use to initialize Plaid Link client-side.
 // See https://plaid.com/docs/#create-link-token
 app.post('/api/create_link_token', function (request, response, next) {
@@ -515,7 +547,7 @@ app.use('/api', function (error, request, response, next) {
 });
 
 const server = app.listen(APP_PORT, function () {
-  console.log('plaid-quickstart server listening on port ' + APP_PORT);
+  console.log('server listening on port ' + APP_PORT);
 });
 
 const prettyPrintResponse = response => {

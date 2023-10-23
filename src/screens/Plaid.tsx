@@ -8,6 +8,7 @@ import {API_URL} from '@env';
 import {PlaidScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
 import {colorStyles, styles} from '../styles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
@@ -57,7 +58,7 @@ const PlaidScreen = () => {
                 itemId: data.item_id,
               };
               console.log(data);
-
+              AsyncStorage.setItem()
               dispatch(plaidAction.getPlaidToken(accessInformation));
             })
             .catch(err => {

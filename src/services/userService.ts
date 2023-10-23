@@ -30,6 +30,7 @@ export const handleRegister = async (user: CreateUser) => {
       birthday: sessionUser?.user_metadata.birthday,
       email: sessionUser?.email,
       id: sessionUser?.id,
+      accessToken: response.data.session.access_token,
     };
     return authUser;
   }
@@ -48,6 +49,7 @@ export const handleLogin = async (email: string, password: string) => {
       birthday: sessionUser?.user_metadata.birthday,
       email: sessionUser?.email,
       id: sessionUser?.id,
+      accessToken: response.data.session.access_token,
     };
     return authUser;
   }

@@ -1,17 +1,32 @@
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import {Text, View} from 'react-native';
+import {Button, Text, View} from 'react-native';
 import {State} from '../store/reducers';
 import LogoutButton from '../components/logoutButton';
 import {DashboardScreenRouteProp} from '../types';
 import PlaidScreen from './Plaid';
 import {useNavigation} from '@react-navigation/native';
 import {styles} from '../styles';
+import {appInfo, getAccount, loginUser} from '../services/accountService';
 
 const DashboardScreen = () => {
   const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
-  console.log(user);
+  const {plaid} = useSelector((state: State) => state.plaid);
+
+  console.log(plaid);
+  const onSubmit = async () => {
+    console.log('in onSubmit', user.accessToken);
+    const account = await getAccount(
+      {
+        id: 3,
+        created_at: new Date(),
+        user_id: 3,
+      },
+      user.accessToken,
+    );
+    console.log(account);
+  };
   useEffect(() => {
     if (!user) {
       navigation.navigate('Register');
@@ -23,6 +38,7 @@ const DashboardScreen = () => {
       <Text style={styles.appTitleText}>
         {user && `Welcome ${user.firstName} ${user.lastName}!`}
       </Text>
+      <Button onPress={onSubmit} title="Test" />
       <PlaidScreen />
       <LogoutButton />
     </View>
