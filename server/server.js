@@ -89,33 +89,47 @@ app.post('/api/info', function (request, response, next) {
   });
 });
 
-// app.post('/api/users/login', function (request, response, next) {
-//   Promise.resolve().then(async function () {
-//     const {email, password} = request.body;
-//     const {data, error} = await supabase.supabaseClient.auth.signInWithPassword(
-//       {
-//         email,
-//         password,
-//       },
-//     );
-//   });
-// });
-
 app.post('/api/users/accounts', function (request, response, next) {
   const dbClient = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    global: {headers: request.headers.authorization},
+    global: {
+      headers: {Authorization: request.headers.authorization},
+    },
   });
 
   Promise.resolve().then(async function () {
-    const session = await dbClient.auth.getSession();
-    console.log('session: ', session);
+    const user = await dbClient.from('accounts').select();
+    if (!user.data) {
+      const {data, error} = await dbClient
+        .from('accounts')
+        .insert([request.body])
+        .select();
+      if (error) {
+        return error;
+      } else {
+        return data;
+      }
+    }
+    response.json(user.data);
+  });
+});
 
-    const {data, error} = await dbClient
-      .from('accounts')
-      .insert([request.body])
-      .select();
-    console.log(error, data);
-    return error;
+app.post('/api/user/:id/plaid_token', function (request, response, next) {
+  const dbClient = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    global: {
+      headers: {Authorization: request.headers.authorization},
+    },
+  });
+
+  Promise.resolve().then(async function () {
+    const user = await dbClient.from('accounts').select();
+    if (user.data) {
+      const {error} = await dbClient
+        .from('countries')
+        .update({name: 'Australia'})
+        .eq('id', 1);
+      if (error) return error;
+    }
+    response.json(user.data);
   });
 });
 // Create a link token with configs which we can then use to initialize Plaid Link client-side.

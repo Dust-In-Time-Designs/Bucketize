@@ -13,20 +13,18 @@ const DashboardScreen = () => {
   const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
   const {plaid} = useSelector((state: State) => state.plaid);
-
   console.log(plaid);
+
   const onSubmit = async () => {
-    console.log('in onSubmit', user.accessToken);
-    const account = await getAccount(
+    await getAccount(
       {
-        id: 3,
         created_at: new Date(),
-        user_id: 3,
+        user_id: user.id,
       },
       user.accessToken,
     );
-    console.log(account);
   };
+
   useEffect(() => {
     if (!user) {
       navigation.navigate('Register');

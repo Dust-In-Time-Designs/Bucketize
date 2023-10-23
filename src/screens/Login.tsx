@@ -23,8 +23,10 @@ const LoginScreen = () => {
     const jsonValue = await AsyncStorage.getItem(
       'sb-pkotgkvsnarjmufqcwxj-auth-token',
     );
-
-    console.log(jsonValue != null ? JSON.parse(jsonValue) : null);
+    if (jsonValue != null) {
+      console.log(JSON.parse(jsonValue));
+      navigation.navigate('Dashboard');
+    }
   };
 
   const onSubmit = async () => {

@@ -1,17 +1,7 @@
 import {API_URL} from '@env';
+import {Account} from '../models/user';
 
-export const appInfo = async () => {
-  const res = await fetch(`http://${API_URL}:8080/api/info`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  return res;
-};
-
-export const getAccount = async (account, token) => {
-  console.log('in getAccount');
+export const getAccount = async (account: Account, token: string) => {
   const res = await fetch(`http://${API_URL}:8080/api/users/accounts`, {
     method: 'POST',
     headers: {
@@ -20,5 +10,5 @@ export const getAccount = async (account, token) => {
     },
     body: JSON.stringify(account),
   });
-  return res;
+  return res.json();
 };

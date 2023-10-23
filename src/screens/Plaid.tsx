@@ -57,8 +57,7 @@ const PlaidScreen = () => {
                 accessToken: data.access_token,
                 itemId: data.item_id,
               };
-              console.log(data);
-              AsyncStorage.setItem()
+              
               dispatch(plaidAction.getPlaidToken(accessInformation));
             })
             .catch(err => {
