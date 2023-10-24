@@ -8,21 +8,22 @@ import PlaidScreen from './Plaid';
 import {useNavigation} from '@react-navigation/native';
 import {styles} from '../styles';
 import {appInfo, getAccount, loginUser} from '../services/accountService';
+import {storeToken} from '../services/plaidService';
 
 const DashboardScreen = () => {
   const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
   const {plaid} = useSelector((state: State) => state.plaid);
-  console.log(plaid);
 
   const onSubmit = async () => {
-    await getAccount(
+    const dbUser = await getAccount(
       {
         created_at: new Date(),
         user_id: user.id,
       },
       user.accessToken,
     );
+    await storeToken(user.id, 'fakeplaidtoken', user.accessToken);
   };
 
   useEffect(() => {

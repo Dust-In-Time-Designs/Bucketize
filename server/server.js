@@ -113,25 +113,44 @@ app.post('/api/users/accounts', function (request, response, next) {
   });
 });
 
-app.post('/api/user/:id/plaid_token', function (request, response, next) {
+app.post('/api/user/:id/plaid_token', async function (request, response, next) {
+  console.log('in token store');
   const dbClient = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    global: {
-      headers: {Authorization: request.headers.authorization},
-    },
+    headers: {Authorization: request.headers.authorization},
   });
 
-  Promise.resolve().then(async function () {
-    const user = await dbClient.from('accounts').select();
-    if (user.data) {
-      const {error} = await dbClient
-        .from('countries')
-        .update({name: 'Australia'})
-        .eq('id', 1);
-      if (error) return error;
+  try {
+    const {data: user, error} = await dbClient.from('accounts').select();
+
+    if (error) {
+      console.log('error fetching user: ', error);
+      return response.json({error: 'Error fetching user'});
     }
-    response.json(user.data);
-  });
+    console.log(user);
+    if (user) {
+      const {data, error: updateError} = await dbClient
+        .from('accounts')
+        .upsert({plaid_access_token: request.body.token})
+        .eq('user_id', request.params.id)
+        .select();
+
+      if (updateError) {
+        console.log('error updating user: ', updateError);
+        return response.json({error: 'Error updating user'});
+      }
+
+      console.log('data: ', data);
+      return response.json(data);
+    } else {
+      console.log('not found');
+      return response.json({error: 'User not found'});
+    }
+  } catch (e) {
+    console.log('unexpected error: ', e);
+    return response.json({error: 'Unexpected error occurred'});
+  }
 });
+
 // Create a link token with configs which we can then use to initialize Plaid Link client-side.
 // See https://plaid.com/docs/#create-link-token
 app.post('/api/create_link_token', function (request, response, next) {
@@ -156,7 +175,7 @@ app.post('/api/create_link_token', function (request, response, next) {
         configs.android_package_name = PLAID_ANDROID_PACKAGE_NAME;
       }
       const createTokenResponse = await client.linkTokenCreate(configs);
-      prettyPrintResponse(createTokenResponse);
+      // prettyPrintResponse(createTokenResponse);
       response.json(createTokenResponse.data);
     })
     .catch(next);
@@ -184,7 +203,7 @@ app.post(
             },
           });
         const recipientId = createRecipientResponse.data.recipient_id;
-        prettyPrintResponse(createRecipientResponse);
+        // prettyPrintResponse(createRecipientResponse);
 
         const createPaymentResponse =
           await client.paymentInitiationPaymentCreate({
@@ -195,7 +214,7 @@ app.post(
               currency: 'GBP',
             },
           });
-        prettyPrintResponse(createPaymentResponse);
+        // prettyPrintResponse(createPaymentResponse);
         const paymentId = createPaymentResponse.data.payment_id;
 
         // We store the payment_id in memory for demo purposes - in production, store it in a secure
@@ -223,7 +242,7 @@ app.post(
           configs.redirect_uri = PLAID_REDIRECT_URI;
         }
         const createTokenResponse = await client.linkTokenCreate(configs);
-        prettyPrintResponse(createTokenResponse);
+        // prettyPrintResponse(createTokenResponse);
         response.json(createTokenResponse.data);
       })
       .catch(next);
@@ -240,7 +259,7 @@ app.post('/api/set_access_token', function (request, response, next) {
       const tokenResponse = await client.itemPublicTokenExchange({
         public_token: PUBLIC_TOKEN,
       });
-      prettyPrintResponse(tokenResponse);
+      // prettyPrintResponse(tokenResponse);
       ACCESS_TOKEN = tokenResponse.data.access_token;
       ITEM_ID = tokenResponse.data.item_id;
       if (PLAID_PRODUCTS.includes(Products.Transfer)) {
@@ -264,7 +283,7 @@ app.get('/api/auth', function (request, response, next) {
       const authResponse = await client.authGet({
         access_token: ACCESS_TOKEN,
       });
-      prettyPrintResponse(authResponse);
+      // prettyPrintResponse(authResponse);
       response.json(authResponse.data);
     })
     .catch(next);
@@ -277,7 +296,7 @@ app.post('/api/set_access_token', function (request, response, next) {
       const tokenResponse = await client.itemPublicTokenExchange({
         public_token: PUBLIC_TOKEN,
       });
-      prettyPrintResponse(tokenResponse);
+      // prettyPrintResponse(tokenResponse);
       ACCESS_TOKEN = tokenResponse.data.access_token;
       ITEM_ID = tokenResponse.data.item_id;
       if (PLAID_PRODUCTS.includes(Products.Transfer)) {
@@ -321,7 +340,7 @@ app.get('/api/transactions', function (request, response, next) {
         hasMore = data.has_more;
         // Update cursor to the next cursor
         cursor = data.next_cursor;
-        prettyPrintResponse(response);
+        // prettyPrintResponse(response);
       }
 
       const compareTxnsByDateAscending = (a, b) =>
@@ -349,7 +368,7 @@ app.get('/api/investments_transactions', function (request, response, next) {
       };
       const investmentTransactionsResponse =
         await client.investmentsTransactionsGet(configs);
-      prettyPrintResponse(investmentTransactionsResponse);
+      // prettyPrintResponse(investmentTransactionsResponse);
       response.json({
         error: null,
         investments_transactions: investmentTransactionsResponse.data,
@@ -366,7 +385,7 @@ app.get('/api/identity', function (request, response, next) {
       const identityResponse = await client.identityGet({
         access_token: ACCESS_TOKEN,
       });
-      prettyPrintResponse(identityResponse);
+      // prettyPrintResponse(identityResponse);
       response.json({identity: identityResponse.data.accounts});
     })
     .catch(next);
@@ -380,7 +399,7 @@ app.get('/api/balance', function (request, response, next) {
       const balanceResponse = await client.accountsBalanceGet({
         access_token: ACCESS_TOKEN,
       });
-      prettyPrintResponse(balanceResponse);
+      // prettyPrintResponse(balanceResponse);
       response.json(balanceResponse.data);
     })
     .catch(next);
@@ -394,7 +413,7 @@ app.get('/api/holdings', function (request, response, next) {
       const holdingsResponse = await client.investmentsHoldingsGet({
         access_token: ACCESS_TOKEN,
       });
-      prettyPrintResponse(holdingsResponse);
+      // prettyPrintResponse(holdingsResponse);
       response.json({error: null, holdings: holdingsResponse.data});
     })
     .catch(next);
@@ -408,7 +427,7 @@ app.get('/api/liabilities', function (request, response, next) {
       const liabilitiesResponse = await client.liabilitiesGet({
         access_token: ACCESS_TOKEN,
       });
-      prettyPrintResponse(liabilitiesResponse);
+      // prettyPrintResponse(liabilitiesResponse);
       response.json({error: null, liabilities: liabilitiesResponse.data});
     })
     .catch(next);
@@ -430,7 +449,7 @@ app.get('/api/item', function (request, response, next) {
         country_codes: PLAID_COUNTRY_CODES,
       };
       const instResponse = await client.institutionsGetById(configs);
-      prettyPrintResponse(itemResponse);
+      // prettyPrintResponse(itemResponse);
       response.json({
         item: itemResponse.data.item,
         institution: instResponse.data.institution,
@@ -447,7 +466,7 @@ app.get('/api/accounts', function (request, response, next) {
       const accountsResponse = await client.accountsGet({
         access_token: ACCESS_TOKEN,
       });
-      prettyPrintResponse(accountsResponse);
+      // prettyPrintResponse(accountsResponse);
       response.json(accountsResponse.data);
     })
     .catch(next);
@@ -486,7 +505,7 @@ app.get('/api/assets', function (request, response, next) {
         options,
       };
       const assetReportCreateResponse = await client.assetReportCreate(configs);
-      prettyPrintResponse(assetReportCreateResponse);
+      // prettyPrintResponse(assetReportCreateResponse);
       const assetReportToken =
         assetReportCreateResponse.data.asset_report_token;
       const getResponse = await getAssetReportWithRetries(
@@ -500,8 +519,8 @@ app.get('/api/assets', function (request, response, next) {
       const pdfResponse = await client.assetReportPdfGet(pdfRequest, {
         responseType: 'arraybuffer',
       });
-      prettyPrintResponse(getResponse);
-      prettyPrintResponse(pdfResponse);
+      // prettyPrintResponse(getResponse);
+      // prettyPrintResponse(pdfResponse);
       response.json({
         json: getResponse.data.report,
         pdf: pdfResponse.data.toString('base64'),
@@ -516,7 +535,7 @@ app.get('/api/transfer', function (request, response, next) {
       const transferGetResponse = await client.transferGet({
         transfer_id: TRANSFER_ID,
       });
-      prettyPrintResponse(transferGetResponse);
+      // prettyPrintResponse(transferGetResponse);
       response.json({
         error: null,
         transfer: transferGetResponse.data.transfer,
@@ -533,7 +552,7 @@ app.get('/api/payment', function (request, response, next) {
       const paymentGetResponse = await client.paymentInitiationPaymentGet({
         payment_id: PAYMENT_ID,
       });
-      prettyPrintResponse(paymentGetResponse);
+      // prettyPrintResponse(paymentGetResponse);
       response.json({error: null, payment: paymentGetResponse.data});
     })
     .catch(next);
@@ -548,7 +567,7 @@ app.get(
         const paystubsGetResponse = await client.incomeVerificationPaystubsGet({
           access_token: ACCESS_TOKEN,
         });
-        prettyPrintResponse(paystubsGetResponse);
+        // prettyPrintResponse(paystubsGetResponse);
         response.json({error: null, paystubs: paystubsGetResponse.data});
       })
       .catch(next);
@@ -556,7 +575,7 @@ app.get(
 );
 
 app.use('/api', function (error, request, response, next) {
-  prettyPrintResponse(error.response);
+  // prettyPrintResponse(error.response);
   response.json(formatError(error.response));
 });
 
@@ -642,7 +661,7 @@ const authorizeAndCreateTransfer = async accessToken => {
         },
       },
     });
-  prettyPrintResponse(transferAuthorizationResponse);
+  // prettyPrintResponse(transferAuthorizationResponse);
   const authorizationId = transferAuthorizationResponse.data.authorization.id;
 
   const transferResponse = await client.transferCreate({
@@ -667,6 +686,6 @@ const authorizeAndCreateTransfer = async accessToken => {
       },
     },
   });
-  prettyPrintResponse(transferResponse);
+  // prettyPrintResponse(transferResponse);
   return transferResponse.data.transfer.id;
 };

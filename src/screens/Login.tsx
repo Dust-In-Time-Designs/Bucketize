@@ -24,8 +24,10 @@ const LoginScreen = () => {
       'sb-pkotgkvsnarjmufqcwxj-auth-token',
     );
     if (jsonValue != null) {
-      console.log(JSON.parse(jsonValue));
-      navigation.navigate('Dashboard');
+      console.log('already authenticated');
+      //authentication is always persisted so when the actual token expires
+      //we cannot navigate to the login screen
+      // navigation.navigate('Dashboard');
     }
   };
 

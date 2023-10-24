@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, Image} from 'react-native';
 import {PlaidLink} from 'react-native-plaid-link-sdk';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {PlaidAuth} from '../models/user';
 import {plaidAction} from '../store/actions';
 import {API_URL} from '@env';
@@ -9,11 +9,14 @@ import {PlaidScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
 import {colorStyles, styles} from '../styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {storeToken} from '../services/plaidService';
+import {State} from '../store/reducers';
 
 const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
   const dispatch = useDispatch();
   const [linkToken, setLinkToken] = useState(null);
+  const {user} = useSelector((state: State) => state.auth);
 
   const createLinkToken = useCallback(async () => {
     await fetch(`http://${API_URL}:8080/api/create_link_token`, {
@@ -57,8 +60,13 @@ const PlaidScreen = () => {
                 accessToken: data.access_token,
                 itemId: data.item_id,
               };
-              
-              dispatch(plaidAction.getPlaidToken(accessInformation));
+              const tokenStored = storeToken(
+                user.id,
+                data.access_token,
+                user.accessToken,
+              );
+              console.log('storeToken response: ', tokenStored);
+              // dispatch(plaidAction.getPlaidToken(accessInformation));
             })
             .catch(err => {
               console.log(err);
