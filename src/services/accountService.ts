@@ -2,7 +2,6 @@ import {API_URL} from '@env';
 import {Account} from '../models/user';
 
 export const getAccount = async (account: Account, token: string) => {
-  console.log('token: ', token);
   const res = await fetch(`http://${API_URL}:8080/api/users/accounts`, {
     method: 'POST',
     headers: {

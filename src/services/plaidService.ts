@@ -8,7 +8,7 @@ export const storeToken = async (
   const res = await fetch(
     //need to update the plaid token to be the id
     //trying to send a request to query for the user and add the plaid token to that user account
-    `http://${API_URL}:8080/api/user/${id}/plaid_token`,
+    `http://${API_URL}:8080/api/users/${id}/plaid_token`,
     {
       method: 'POST',
       headers: {
@@ -18,5 +18,7 @@ export const storeToken = async (
       body: JSON.stringify({token: plaid_token}),
     },
   );
+  console.log(res.json);
+
   return res.json();
 };
