@@ -1,5 +1,6 @@
 const express = require('express');
 const supabaseClient = require('@supabase/supabase-js');
+const supabase = require('../../config/supabase');
 
 const router = express.Router();
 
@@ -7,16 +8,12 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 router.post('/accounts', function (request, response, next) {
-  const dbClient = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    global: {
-      headers: {Authorization: request.headers.authorization},
-    },
-  });
-
   Promise.resolve().then(async function () {
-    const user = await dbClient.from('accounts').select();
+    const user = await supabase.from('accounts').select();
+    console.log('user? ', user);
+
     if (!user.data) {
-      const {data, error} = await dbClient
+      const {data, error} = await supabase
         .from('accounts')
         .insert([request.body])
         .select();
@@ -31,14 +28,9 @@ router.post('/accounts', function (request, response, next) {
 });
 
 router.post('/:id/plaid_token', async function (request, response, next) {
-  console.log('in token store');
-  const dbClient = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    headers: {Authorization: request.headers.authorization},
-  });
-  // Need to encode and decode JWT token as per:
-  // https://github.com/orgs/supabase/discussions/1067
+  console.log('in token store', request.body);
   try {
-    const {data: user, error} = await dbClient
+    const {data: user, error} = await supabase
       .from('accounts')
       .select('*')
       .eq('user_id', request.params.id)
@@ -50,12 +42,12 @@ router.post('/:id/plaid_token', async function (request, response, next) {
     }
     console.log(user);
     if (user) {
-      const {data, error: updateError} = await dbClient
+      user.plaid_access_token = request.body.token;
+      console.log(user)
+      const {data, error: updateError} = await supabase
         .from('accounts')
-        .select('*')
-        .update({plaid_access_token: request.body.token})
-        .eq('user_id', 'ec913d50-7968-453e-a159-6c08e255776a')
-        .single();
+        .upsert(user)
+        .eq('user_id', user.user_id)
 
       if (updateError) {
         console.error('Error updating user:', updateError);

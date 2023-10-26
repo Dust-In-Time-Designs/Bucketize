@@ -7,8 +7,7 @@ import {DashboardScreenRouteProp} from '../types';
 import PlaidScreen from './Plaid';
 import {useNavigation} from '@react-navigation/native';
 import {styles} from '../styles';
-import {appInfo, getAccount, loginUser} from '../services/accountService';
-import {storeToken} from '../services/plaidService';
+import {getAccount, updatePlaidToken} from '../services/accountService';
 
 const DashboardScreen = () => {
   const navigation = useNavigation<DashboardScreenRouteProp>();
@@ -16,14 +15,12 @@ const DashboardScreen = () => {
   const {plaid} = useSelector((state: State) => state.plaid);
 
   const onSubmit = async () => {
-    const dbUser = await getAccount(
-      {
-        created_at: new Date(),
-        user_id: user.id,
-      },
-      user.accessToken,
-    );
-    await storeToken(user.id, 'fakeplaidtoken', user.accessToken);
+    // const dbUser = await getAccount({
+    //   created_at: new Date(),
+    //   user_id: user.id,
+    // });
+    const dbUser = await updatePlaidToken('newplaidtoken');
+    console.log('dbUser: ', dbUser);
   };
 
   useEffect(() => {
@@ -38,7 +35,7 @@ const DashboardScreen = () => {
         {user && `Welcome ${user.firstName} ${user.lastName}!`}
       </Text>
       <Button onPress={onSubmit} title="Test" />
-      <PlaidScreen />
+      {/* <PlaidScreen /> */}
       <LogoutButton />
     </View>
   );

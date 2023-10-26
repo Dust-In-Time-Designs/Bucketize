@@ -6,7 +6,7 @@ router.post('/register', async (req, res) => {
   const {email, password, firstName, lastName, phoneNumber, birthday} =
     req.body;
 
-  const {user, session, error} = await supabase.auth.signUp({
+  const {data, error} = await supabase.auth.signUp({
     email,
     password,
     data: {
@@ -21,6 +21,7 @@ router.post('/register', async (req, res) => {
     console.log(error);
     return res.status(500).json({error: 'Internal server error'});
   } else {
+    const user = data.user;
     const sessionUser = user?.user_metadata;
     const authUser = {
       firstName: sessionUser.firstName,
@@ -29,7 +30,7 @@ router.post('/register', async (req, res) => {
       birthday: sessionUser.birthday,
       email: user?.email,
       id: user?.id,
-      accessToken: session?.access_token,
+      accessToken: data?.access_token,
     };
     req.session.user = authUser;
     return res.json(authUser);
@@ -38,16 +39,14 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const {email, password} = req.body;
-  console.log(supabase)
-  const {user, session, error} = await supabase.auth.signInWithPassword({
+  const {data, error} = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-  console.log(user, session, error)
   if (error) {
-    console.log(error);
     return res.status(500).json({error: 'Internal server error'});
   } else {
+    const user = data.user;
     const sessionUser = user?.user_metadata;
     const authUser = {
       firstName: sessionUser.firstName,
@@ -56,7 +55,7 @@ router.post('/login', async (req, res) => {
       birthday: sessionUser.birthday,
       email: user?.email,
       id: user?.id,
-      accessToken: session?.access_token,
+      accessToken: data?.access_token,
     };
 
     req.session.user = authUser;

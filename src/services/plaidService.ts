@@ -12,8 +12,11 @@ const handlePlaidInfo = async () => {
 
 const handleCreateLinkToken = async () => {
   try {
+    console.log('creating link token');
     const response = await fetch(`${API_URL}/api/plaid/create_link_token`);
+    console.log(response)
     const data = await response.json();
+    console.log('Plaid response: ', data);
     return data;
   } catch (error) {
     console.error(error);

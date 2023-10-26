@@ -79,11 +79,11 @@ router.post('/info', function (request, response, next) {
 // Create a link token with configs which we can then use to initialize Plaid Link client-side.
 // See https://plaid.com/docs/#create-link-token
 router.post('/create_link_token', function (request, response, next) {
+  console.log('in server');
   Promise.resolve()
     .then(async function () {
       const configs = {
         user: {
-          // This should correspond to a unique id for the current user.
           client_user_id: 'user-id',
         },
         client_name: 'Plaid Quickstart',

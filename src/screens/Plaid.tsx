@@ -17,7 +17,8 @@ const PlaidScreen = () => {
 
   const createLinkToken = useCallback(async () => {
     try {
-      const data = await handleCreateLinkToken(); 
+      const data = await handleCreateLinkToken();
+      console.log('Plaid line 21: ', data);
       setLinkToken(data.link_token);
     } catch (err) {
       console.log(err);
@@ -25,6 +26,7 @@ const PlaidScreen = () => {
   }, [setLinkToken]);
 
   useEffect(() => {
+    console.log('linkToken: ', linkToken);
     if (linkToken == null) {
       createLinkToken();
     }
