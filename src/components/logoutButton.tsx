@@ -3,7 +3,7 @@ import {Button, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {handleLogout} from '../services/userService';
 import {authAction} from '../store/actions';
-import {colorStyles, styles } from '../styles';
+import {colorStyles, styles} from '../styles';
 const LogoutButton = () => {
   const dispatch = useDispatch();
   const onLogout = async () => {
