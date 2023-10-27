@@ -6,15 +6,17 @@ import {useNavigation} from '@react-navigation/native';
 import {styles} from '../styles';
 import {
   handleCreateLinkToken,
+  handleRetrieveAccessToken,
   handleSetAccessToken,
 } from '../services/plaidService'; // Import the necessary functions
-import {PlaidScreenRouteProp} from '../types';
+import {PlaidScreenRouteProp, WalletDetails} from '../types';
 import {State} from '../store/reducers';
 
 const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
   const [linkToken, setLinkToken] = useState(null);
   const {user} = useSelector((state: State) => state.auth);
+  const [walletDetails, setWalletDetails] = useState<WalletDetails>();
 
   const createLinkToken = useCallback(async () => {
     try {
@@ -23,13 +25,26 @@ const PlaidScreen = () => {
     } catch (err) {
       console.log('error', err);
     }
-  }, [setLinkToken, user.accessToken]);
+  }, [setLinkToken, user]);
+
+  const checkForPlaidItem = useCallback(async () => {
+    if (user) {
+      const token = await handleRetrieveAccessToken(user.accessToken);
+      if (token) {
+        navigation.navigate('WalletDetails', {
+          accessToken: token[0].plaid_access_token,
+          itemId: token[0].plaid_item_id,
+        });
+      }
+    }
+  }, [navigation, user]);
 
   useEffect(() => {
     if (linkToken == null && user) {
       createLinkToken();
+      checkForPlaidItem();
     }
-  }, [linkToken, createLinkToken, user]);
+  }, [linkToken, createLinkToken, user, checkForPlaidItem]);
 
   return (
     <View style={styles.plaidButtonContainer}>
@@ -41,15 +56,18 @@ const PlaidScreen = () => {
         onSuccess={async success => {
           try {
             const data = await handleSetAccessToken(success.publicToken);
-            const accessInformation = {
-              accessToken: data.access_token,
-              itemId: data.item_id,
-            };
-            // dispatch(plaidAction.getPlaidToken(accessInformation));
+            console.log('response data: ', data, 'response data[0]: ', data[0]);
+            setWalletDetails({
+              accessToken: data[0].plaid_access_token,
+              itemId: data[0].plaid_item_id,
+            });
           } catch (err) {
             console.log(err);
           }
-          navigation.navigate('WalletDetails');
+          navigation.navigate('WalletDetails', {
+            accessToken: walletDetails.accessToken,
+            itemId: walletDetails.itemId,
+          });
         }}
         onExit={response => {
           console.log(response);

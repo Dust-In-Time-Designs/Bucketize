@@ -1,31 +1,18 @@
-import React, {useCallback, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {useSelector} from 'react-redux';
-import {State} from '../store/reducers';
-import {API_URL} from '@env';
 import {colorStyles, styles} from '../styles';
+import {handleGetBalance} from '../services/plaidService';
+import {User} from '../models/user';
 
-const Balance = () => {
+type Params = {
+  accessToken: string;
+  itemId: string;
+  user: User;
+};
+
+const Balance = ({accessToken, itemId, user}: Params) => {
   const [data, setData] = useState(null);
-  const {accessToken, itemId} = useSelector((state: State) => state.plaid);
-  const {user} = useSelector((state: State) => state.auth)
-  const getBalance = useCallback(async () => {
-    await fetch(`http://${API_URL}:8080/api/balance`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        access_token: accessToken,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        setData(data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
 
   const renderItem = ({item}) => {
     return (
@@ -74,10 +61,13 @@ const Balance = () => {
   };
 
   useEffect(() => {
-    if (data == null) {
-      getBalance();
-    }
-  }, [data]);
+    return async () => {
+      if (data == null) {
+        const balance = await handleGetBalance(user.accessToken, accessToken);
+        setData(balance);
+      }
+    };
+  }, [data, accessToken, user]);
   return (
     <View>
       <FlatList

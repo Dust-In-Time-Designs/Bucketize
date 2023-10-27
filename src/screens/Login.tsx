@@ -20,7 +20,6 @@ const LoginScreen = () => {
 
   const onSubmit = async () => {
     const user = await handleLogin(email, password);
-    console.log('Logging in: ', user);
     if (user) {
       dispatch(authAction.loginUser(user));
       navigation.navigate('Dashboard');
@@ -30,7 +29,6 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    console.log('am I logged in? ', authUser);
     if (authUser) {
       navigation.navigate('Dashboard');
     }

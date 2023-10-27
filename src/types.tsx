@@ -5,7 +5,7 @@ export type RootStackParamList = {
   Register: undefined;
   Login: undefined;
   Dashboard: undefined;
-  WalletDetails: undefined;
+  WalletDetails: {accessToken: string; itemId: string};
   Plaid: undefined;
 };
 
@@ -38,3 +38,5 @@ export type PlaidScreenRouteProp = StackNavigationProp<
   RootStackParamList,
   'Plaid'
 >;
+
+export type WalletDetails = {accessToken: string; itemId: string};

@@ -116,7 +116,6 @@ router.post('/set_access_token', function (request, response, next) {
       if (error) {
         return response.status(500).json({error});
       }
-      console.log(user);
       const tokenResponse = await client.itemPublicTokenExchange({
         public_token: PUBLIC_TOKEN,
       });
@@ -137,6 +136,19 @@ router.post('/set_access_token', function (request, response, next) {
         .select();
       if (itemError) {
         return response.status(401).json({error});
+      }
+      response.json(item);
+    })
+    .catch(next);
+});
+
+//Retrieve a access_token
+router.post('/retrieve_access_token', function (request, response, next) {
+  Promise.resolve()
+    .then(async function () {
+      const {data: item, error} = await supabase.from('items').select();
+      if (error) {
+        return response.status(500).json({error});
       }
       response.json(item);
     })
@@ -173,12 +185,12 @@ router.get('/transactions', function (request, response, next) {
       let hasMore = true;
       // Iterate through each page of new transaction updates for item
       while (hasMore) {
-        const request = {
-          access_token: ACCESS_TOKEN,
+        const req = {
+          access_token: request.headers.access_token,
           cursor: cursor,
         };
-        const response = await client.transactionsSync(request);
-        const data = response.data;
+        const res = await client.transactionsSync(req);
+        const data = res.data;
         // Add this page of results
         added = added.concat(data.added);
         modified = modified.concat(data.modified);
@@ -243,9 +255,9 @@ router.get('/balance', function (request, response, next) {
   Promise.resolve()
     .then(async function () {
       const balanceResponse = await client.accountsBalanceGet({
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
       });
-      // prettyPrintResponse(balanceResponse);
+      prettyPrintResponse(balanceResponse);
       response.json(balanceResponse.data);
     })
     .catch(next);

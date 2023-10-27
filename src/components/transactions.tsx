@@ -1,36 +1,26 @@
-import React, {useCallback, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, StyleSheet, Image} from 'react-native';
-import {useSelector} from 'react-redux';
-import {State} from '../store/reducers';
-import {API_URL} from '@env';
-import { colorStyles } from '../styles';
+import {colorStyles} from '../styles';
+import {handleGetTransactions} from '../services/plaidService';
+import {User} from '../models/user';
 
-const Transactions = () => {
+type Params = {
+  accessToken: string;
+  itemId: string;
+  user: User;
+};
+
+const Transactions = ({accessToken, itemId, user}: Params) => {
   const [transactionData, setTransactionData] = useState(null);
-  const {accessToken, itemId} = useSelector((state: State) => state.plaid);
-  const getTransactions = useCallback(async () => {
-    await fetch(`http://${API_URL}:8080/api/transactions`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        access_token: accessToken,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        setTransactionData(data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
-  console.log('🚀 ~ file: index.js:26 ~ getTransactions ', transactionData);
 
   useEffect(() => {
-    if (transactionData == null) {
-      getTransactions();
-    }
-  }, [transactionData]);
+    return async () => {
+      if (transactionData == null) {
+        const data = await handleGetTransactions(user.accessToken, accessToken);
+        setTransactionData(data);
+      }
+    };
+  }, [transactionData, user, accessToken]);
 
   const renderItem = ({item}) => {
     return (
@@ -84,7 +74,7 @@ const Transactions = () => {
       />
     </View>
   );
-}
+};
 const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
