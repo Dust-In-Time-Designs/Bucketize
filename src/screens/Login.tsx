@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector} from 'react-redux';
 import {Button, Text, TextInput, View} from 'react-native';
 import {useDispatch} from 'react-redux';
@@ -19,16 +18,9 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const getAuthUser = async () => {
-    const jsonValue = await AsyncStorage.getItem(
-      'sb-pkotgkvsnarjmufqcwxj-auth-token',
-    );
-
-    console.log(jsonValue != null ? JSON.parse(jsonValue) : null);
-  };
-
   const onSubmit = async () => {
     const user = await handleLogin(email, password);
+    console.log('Logging in: ', user);
     if (user) {
       dispatch(authAction.loginUser(user));
       navigation.navigate('Dashboard');
@@ -38,8 +30,7 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    getAuthUser();
-
+    console.log('am I logged in? ', authUser);
     if (authUser) {
       navigation.navigate('Dashboard');
     }

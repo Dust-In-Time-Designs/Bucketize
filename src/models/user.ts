@@ -14,9 +14,15 @@ export type User = {
   email: string | undefined;
   phoneNumber: string;
   birthday: Date;
+  accessToken: string;
 };
 
 export type PlaidAuth = {
   accessToken: string;
   itemId: string;
+};
+
+export type Account = {
+  created_at: Date;
+  user_id: string;
 };

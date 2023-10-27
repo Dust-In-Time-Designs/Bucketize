@@ -9,6 +9,7 @@ import {colorStyles, styles} from '../styles';
 const Balance = () => {
   const [data, setData] = useState(null);
   const {accessToken, itemId} = useSelector((state: State) => state.plaid);
+  const {user} = useSelector((state: State) => state.auth)
   const getBalance = useCallback(async () => {
     await fetch(`http://${API_URL}:8080/api/balance`, {
       method: 'GET',

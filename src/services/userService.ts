@@ -1,62 +1,66 @@
-import {supabase} from '../config/initSupabase';
+import {API_URL} from '@env';
 import {CreateUser, User} from '../models/user';
-const {auth} = supabase;
-
-// supabase.auth.onAuthStateChange((event, session) => {
-//   console.log(event, session);
-// });
 
 export const handleRegister = async (user: CreateUser) => {
-  const response = await auth.signUp({
-    email: user.email,
-    password: user.password,
-    options: {
-      data: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        birthday: user.birthday,
-      },
+  const response = await fetch(`${API_URL}/api/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify(user),
   });
-  if (response.error) {
-    console.log(response.error);
+  const data = await response.json();
+  if (response.status !== 200) {
+    console.log(data.error);
   } else {
-    const sessionUser = response.data.session?.user.app_metadata;
     const authUser: User = {
-      firstName: sessionUser?.user_metadata.firstName,
-      lastName: sessionUser?.user_metadata.lastName,
-      phoneNumber: sessionUser?.user_metadata.phoneNumber,
-      birthday: sessionUser?.user_metadata.birthday,
-      email: sessionUser?.email,
-      id: sessionUser?.id,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phoneNumber: data.phoneNumber,
+      birthday: data.birthday,
+      email: data.email,
+      id: data.id,
+      accessToken: data.accessToken,
     };
     return authUser;
   }
 };
 
 export const handleLogin = async (email: string, password: string) => {
-  const response = await auth.signInWithPassword({email, password});
-  if (response.error) {
-    console.log(response.error);
+  const response = await fetch(`${API_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({email, password}),
+  });
+  const data = await response.json();
+  if (response.status !== 200) {
+    console.log(data.error);
   } else {
-    const sessionUser = response.data.session?.user;
     const authUser: User = {
-      firstName: sessionUser?.user_metadata.firstName,
-      lastName: sessionUser?.user_metadata.lastName,
-      phoneNumber: sessionUser?.user_metadata.phoneNumber,
-      birthday: sessionUser?.user_metadata.birthday,
-      email: sessionUser?.email,
-      id: sessionUser?.id,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phoneNumber: data.phoneNumber,
+      birthday: data.birthday,
+      email: data.email,
+      id: data.id,
+      accessToken: data.accessToken,
     };
     return authUser;
   }
 };
 
 export const handleLogout = async () => {
-  const {error} = await supabase.auth.signOut();
-  if (error) {
-    console.log(error);
+  const response = await fetch(`${API_URL}/api/auth/logout`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  if (response.status !== 200) {
+    console.log(data.error);
   } else {
     return true;
   }

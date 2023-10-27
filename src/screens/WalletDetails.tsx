@@ -1,13 +1,16 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {View, Text, StyleSheet} from 'react-native';
 import Transactions from '../components/transactions';
 import Balance from '../components/balance';
+import { State } from '../store/reducers';
 // import {WalletDetailsScreenRouteProp} from '../types';
 // import { useNavigation } from '@react-navigation/native';
 import {colorStyles} from '../styles';
 
 const WalletDetailsScreen = () => {
   // const navigation = useNavigation<WalletDetailsScreenRouteProp>();
+  const {plaid} = useSelector((state: State) => state.plaid);
   return (
     <View style={styles.container}>
       <View style={styles.balance}>
@@ -16,12 +19,12 @@ const WalletDetailsScreen = () => {
         </View>
         <Balance />
       </View>
-      <View style={styles.transactions}>
+      {/* <View style={styles.transactions}>
         <View style={{marginVertical: 10}}>
           <Text style={styles.heading}>Last Transactions</Text>
         </View>
         <Transactions />
-      </View>
+      </View> */}
     </View>
   );
 };

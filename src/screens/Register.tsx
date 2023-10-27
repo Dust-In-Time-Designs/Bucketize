@@ -28,8 +28,10 @@ const RegisterScreen = () => {
     const jsonValue = await AsyncStorage.getItem(
       'sb-pkotgkvsnarjmufqcwxj-auth-token',
     );
-
-    console.log(jsonValue != null ? JSON.parse(jsonValue) : null);
+    if (jsonValue != null) {
+      console.log('already authenticated');
+      navigation.navigate('Dashboard');
+    }
   };
 
   const parseBirthday = (date: Date) => {

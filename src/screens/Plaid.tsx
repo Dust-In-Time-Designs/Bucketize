@@ -1,40 +1,37 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, Image} from 'react-native';
 import {PlaidLink} from 'react-native-plaid-link-sdk';
-import {useDispatch} from 'react-redux';
-import {PlaidAuth} from '../models/user';
-import {plaidAction} from '../store/actions';
-import {API_URL} from '@env';
-import {PlaidScreenRouteProp} from '../types';
+// import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import {colorStyles, styles} from '../styles';
+import {styles} from '../styles';
+import {
+  handleCreateLinkToken,
+  handleSetAccessToken,
+} from '../services/plaidService'; // Import the necessary functions
+import {PlaidScreenRouteProp} from '../types';
 
 const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
-  const dispatch = useDispatch();
   const [linkToken, setLinkToken] = useState(null);
+  // const {user} = useSelector(state => state.auth);
 
   const createLinkToken = useCallback(async () => {
-    await fetch(`http://${API_URL}:8080/api/create_link_token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        setLinkToken(data.link_token);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    try {
+      const data = await handleCreateLinkToken();
+      console.log('Plaid line 21: ', data);
+      setLinkToken(data.link_token);
+    } catch (err) {
+      console.log(err);
+    }
   }, [setLinkToken]);
 
   useEffect(() => {
+    console.log('linkToken: ', linkToken);
     if (linkToken == null) {
       createLinkToken();
     }
-  }, [linkToken]);
+  }, [linkToken, createLinkToken]);
+
   return (
     <View style={styles.plaidButtonContainer}>
       <PlaidLink
@@ -43,26 +40,17 @@ const PlaidScreen = () => {
           noLoadingState: false,
         }}
         onSuccess={async success => {
-          await fetch(`http://${API_URL}:8080/api/set_access_token`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({public_token: success.publicToken}),
-          })
-            .then(response => response.json())
-            .then(data => {
-              const accessInformation: PlaidAuth = {
-                accessToken: data.access_token,
-                itemId: data.item_id,
-              };
-              console.log(data);
-
-              dispatch(plaidAction.getPlaidToken(accessInformation));
-            })
-            .catch(err => {
-              console.log(err);
-            });
+          try {
+            const data = await handleSetAccessToken(success.publicToken);
+            const accessInformation = {
+              accessToken: data.access_token,
+              itemId: data.item_id,
+            };
+            console.log('storeToken response: ', accessInformation);
+            // dispatch(plaidAction.getPlaidToken(accessInformation));
+          } catch (err) {
+            console.log(err);
+          }
           navigation.navigate('WalletDetails');
         }}
         onExit={response => {
