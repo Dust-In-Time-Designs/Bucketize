@@ -9,6 +9,7 @@ export const getAccount = async (account: Account) => {
   return res.json();
 };
 
+//This may be uneccesary
 export const updatePlaidToken = async (token: string) => {
   const id = 'ec913d50-7968-453e-a159-6c08e255776a';
   const res = await fetch(`${API_URL}/api/users/${id}/plaid_token`, {
@@ -18,4 +19,3 @@ export const updatePlaidToken = async (token: string) => {
   return res.json();
 };
 
-//ec913d50-7968-453e-a159-6c08e255776a

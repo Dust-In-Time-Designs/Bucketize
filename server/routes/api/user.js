@@ -1,11 +1,7 @@
 const express = require('express');
-const supabaseClient = require('@supabase/supabase-js');
 const supabase = require('../../config/supabase');
 
 const router = express.Router();
-
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 router.post('/accounts', function (request, response, next) {
   Promise.resolve().then(async function () {
