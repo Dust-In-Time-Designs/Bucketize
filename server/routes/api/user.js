@@ -6,8 +6,6 @@ const router = express.Router();
 router.post('/accounts', function (request, response, next) {
   Promise.resolve().then(async function () {
     const user = await supabase.from('accounts').select();
-    console.log('user? ', user);
-
     if (!user.data) {
       const {data, error} = await supabase
         .from('accounts')

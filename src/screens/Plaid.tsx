@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, Image} from 'react-native';
 import {PlaidLink} from 'react-native-plaid-link-sdk';
-// import {useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {styles} from '../styles';
 import {
@@ -9,28 +9,27 @@ import {
   handleSetAccessToken,
 } from '../services/plaidService'; // Import the necessary functions
 import {PlaidScreenRouteProp} from '../types';
+import {State} from '../store/reducers';
 
 const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
   const [linkToken, setLinkToken] = useState(null);
-  // const {user} = useSelector(state => state.auth);
+  const {user} = useSelector((state: State) => state.auth);
 
   const createLinkToken = useCallback(async () => {
     try {
-      const data = await handleCreateLinkToken();
-      console.log('Plaid line 21: ', data);
-      setLinkToken(data.link_token);
+      const data = await handleCreateLinkToken(user.accessToken);
+      setLinkToken(data);
     } catch (err) {
-      console.log(err);
+      console.log('error', err);
     }
-  }, [setLinkToken]);
+  }, [setLinkToken, user.accessToken]);
 
   useEffect(() => {
-    console.log('linkToken: ', linkToken);
-    if (linkToken == null) {
+    if (linkToken == null && user) {
       createLinkToken();
     }
-  }, [linkToken, createLinkToken]);
+  }, [linkToken, createLinkToken, user]);
 
   return (
     <View style={styles.plaidButtonContainer}>

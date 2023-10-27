@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
       birthday: sessionUser.birthday,
       email: user?.email,
       id: user?.id,
-      accessToken: data?.access_token,
+      accessToken: data?.session.access_token,
     };
 
     req.session.user = authUser;

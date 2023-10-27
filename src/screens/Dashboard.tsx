@@ -22,6 +22,7 @@ const DashboardScreen = () => {
     const dbUser = await updatePlaidToken('newplaidtoken');
     console.log('dbUser: ', dbUser);
   };
+  console.log(user)
 
   useEffect(() => {
     if (!user) {
@@ -35,7 +36,7 @@ const DashboardScreen = () => {
         {user && `Welcome ${user.firstName} ${user.lastName}!`}
       </Text>
       <Button onPress={onSubmit} title="Test" />
-      {/* <PlaidScreen /> */}
+      <PlaidScreen />
       <LogoutButton />
     </View>
   );

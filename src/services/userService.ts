@@ -52,13 +52,16 @@ export const handleLogin = async (email: string, password: string) => {
 };
 
 export const handleLogout = async () => {
+  console.log('logging out')
   const response = await fetch(`${API_URL}/api/auth/logout`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
   });
+  console.log(response)
   const data = await response.json();
+  console.log(data)
   if (response.status !== 200) {
     console.log(data.error);
   } else {
