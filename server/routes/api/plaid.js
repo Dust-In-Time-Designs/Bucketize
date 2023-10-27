@@ -79,7 +79,7 @@ router.post('/create_link_token', function (request, response, next) {
     .then(async function () {
       const {data: user, error} = await supabase.from('users').select();
       if (error) {
-        return response.status(500).json({error});
+        return response.status(401).json({error});
       }
       const configs = {
         user: {
@@ -112,21 +112,33 @@ router.post('/set_access_token', function (request, response, next) {
   PUBLIC_TOKEN = request.body.public_token;
   Promise.resolve()
     .then(async function () {
+      const {data: user, error} = await supabase.from('users').select();
+      if (error) {
+        return response.status(500).json({error});
+      }
+      console.log(user);
       const tokenResponse = await client.itemPublicTokenExchange({
         public_token: PUBLIC_TOKEN,
       });
-      // prettyPrintResponse(tokenResponse);
+      prettyPrintResponse(tokenResponse);
       ACCESS_TOKEN = tokenResponse.data.access_token;
       ITEM_ID = tokenResponse.data.item_id;
       if (PLAID_PRODUCTS.includes(Products.Transfer)) {
         TRANSFER_ID = await authorizeAndCreateTransfer(ACCESS_TOKEN);
       }
-      response.json({
-        // the 'access_token' is a private token, DO NOT pass this token to the frontend in your production environment
-        access_token: ACCESS_TOKEN,
-        item_id: ITEM_ID,
-        error: null,
-      });
+      const {data: item, error: itemError} = await supabase
+        .from('items')
+        .insert({
+          user_id: user[0].user_id,
+          plaid_access_token: ACCESS_TOKEN,
+          plaid_item_id: ITEM_ID,
+          status: 'good',
+        })
+        .select();
+      if (itemError) {
+        return response.status(401).json({error});
+      }
+      response.json(item);
     })
     .catch(next);
 });

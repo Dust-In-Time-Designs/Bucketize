@@ -45,7 +45,6 @@ const PlaidScreen = () => {
               accessToken: data.access_token,
               itemId: data.item_id,
             };
-            console.log('storeToken response: ', accessInformation);
             // dispatch(plaidAction.getPlaidToken(accessInformation));
           } catch (err) {
             console.log(err);
