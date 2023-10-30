@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, FlatList, StyleSheet, Image} from 'react-native';
-import {colorStyles} from '../styles';
+import {View, Text, FlatList, Image} from 'react-native';
+import {styles} from '../styles';
 import {handleGetTransactions} from '../services/plaidService';
 import {User} from '../models/user';
+import {PlaidTransaction} from '../types';
 
 type Params = {
   accessToken: string;
@@ -10,34 +11,29 @@ type Params = {
   user: User;
 };
 
-const Transactions = ({accessToken, itemId, user}: Params) => {
-  const [transactionData, setTransactionData] = useState(null);
+const Transactions = ({accessToken, user}: Params) => {
+  const [transactionData, setTransactionData] = useState<
+    PlaidTransaction[] | null
+  >(null);
 
   useEffect(() => {
-    return async () => {
+    const fetchTransactions = async () => {
       if (transactionData == null) {
         const data = await handleGetTransactions(user.accessToken, accessToken);
-        setTransactionData(data);
+        setTransactionData(data.latest_transactions);
       }
     };
+
+    fetchTransactions();
   }, [transactionData, user, accessToken]);
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item}: {item: PlaidTransaction}) => {
     return (
       <View style={styles.itemContainer}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            width: '40%',
-          }}>
+        <View style={styles.transactionIcon}>
           <Image
             source={require('../assets/cart.png')}
-            style={{
-              height: 24,
-              width: 24,
-              margin: 10,
-            }}
+            style={styles.transactionIconImg}
           />
           <View>
             <Text style={styles.fontStyle}>Merchant</Text>
@@ -48,13 +44,7 @@ const Transactions = ({accessToken, itemId, user}: Params) => {
           <Text style={styles.fontStyle}>Payment Mode</Text>
           <Text style={styles.text}>{item.payment_channel}</Text>
         </View>
-        <View
-          style={{
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            width: '30%',
-          }}>
+        <View style={styles.transactionIconSmall}>
           <Image source={require('../assets/wallet.png')} style={styles.icon} />
           <Text style={styles.text}>{item.amount}</Text>
         </View>
@@ -64,9 +54,9 @@ const Transactions = ({accessToken, itemId, user}: Params) => {
   return (
     <View style={{marginTop: 10}}>
       <FlatList
-        data={transactionData?.latest_transactions}
+        data={transactionData}
         renderItem={renderItem}
-        keyExtractor={item => item?.account_id}
+        keyExtractor={item => item?.transaction_id}
         maxToRenderPerBatch={5}
         initialNumToRender={10}
         style={{paddingTop: 10}}
@@ -75,33 +65,5 @@ const Transactions = ({accessToken, itemId, user}: Params) => {
     </View>
   );
 };
-const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: 'row',
-    marginVertical: 5,
-    backgroundColor: colorStyles.mainAccent,
-    borderRadius: 10,
-    height: 100,
-  },
-  textView: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#fff',
-    fontSize: 10,
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    marginBottom: 5,
-  },
-
-  fontStyle: {
-    color: '#fff',
-    fontSize: 12,
-  },
-});
 
 export default Transactions;

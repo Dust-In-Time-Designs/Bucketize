@@ -1,33 +1,28 @@
-import React, {useCallback, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text} from 'react-native';
-import {useSelector} from 'react-redux';
-import {State} from '../store/reducers';
-import {API_URL} from '@env';
+import {User} from '../models/user';
+import {handleGetItems} from '../services/plaidService';
+import {PlaidItem} from '../types';
 
-const Items = () => {
-  const [data, setData] = useState(null);
-  const {accessToken, itemId} = useSelector((state: State) => state.plaid);
+type Params = {
+  accessToken: string;
+  itemId: string;
+  user: User;
+};
 
-  const getItems = useCallback(async () => {
-    await fetch(`http://${API_URL}:8080/api/item`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        access_token: accessToken,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('🚀 getItems', data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
+const Items = ({accessToken, user}: Params) => {
+  const [data, setData] = useState<PlaidItem | null>(null);
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (data == null) {
+        const items = await handleGetItems(user.accessToken, accessToken);
+        setData(items.item);
+      }
+    };
 
-  React.useEffect(() => {
-    getItems();
-  }, []);
+    fetchTransactions();
+  }, [data, user, accessToken]);
+
   return (
     <View>
       <Text>todo..</Text>

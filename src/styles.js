@@ -186,4 +186,67 @@ export const styles = StyleSheet.create({
     height: '30%',
     paddingHorizontal: 10,
   },
+  // ----- Transaction styles ------------
+  itemContainer: {
+    flexDirection: 'row',
+    marginVertical: 5,
+    backgroundColor: colorStyles.mainAccent,
+    borderRadius: 10,
+    height: 100,
+  },
+  textView: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#fff',
+    fontSize: 10,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginBottom: 5,
+  },
+
+  fontStyle: {
+    color: '#fff',
+    fontSize: 12,
+  },
+
+  transactionIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '40%',
+  },
+  transactionIconImg: {height: 24, width: 24, margin: 10},
+  transactionIconSmall: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    width: '30%',
+  },
+  walletContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  walletHeading: {
+    color: colorStyles.secondaryAccent,
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  walletTransactions: {
+    paddingBottom: 50,
+    height: '75%',
+  },
+  walletBalance: {
+    height: '25%',
+    width: '100%',
+  },
+  balanceHeader: {fontSize: 12, fontWeight: '600', color: '#1E1E2D'},
+  balanceHeaderLarge: {
+    fontSize: 30,
+    fontWeight: '600',
+    color: '#1E1E2D',
+  },
 });

@@ -92,7 +92,6 @@ const handleGetTransactions = async (
   authToken: string,
   plaidAccessToken: string,
 ) => {
-  console.log('getting transactions...');
   try {
     const response = await fetch(`${API_URL}/api/plaid/transactions`, {
       method: 'GET',
@@ -109,6 +108,61 @@ const handleGetTransactions = async (
   }
 };
 
+const handleGetAccounts = async (
+  authToken: string,
+  plaidAccessToken: string,
+) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/accounts`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: plaidAccessToken,
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+const handleGetAssets = async (authToken: string, plaidAccessToken: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/assets`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: plaidAccessToken,
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+const handleGetItems = async (authToken: string, plaidAccessToken: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/item`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: plaidAccessToken,
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    console.log(response)
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
 export {
   handlePlaidInfo,
   handleCreateLinkToken,
@@ -117,4 +171,7 @@ export {
   handleRetrieveAccessToken,
   handleGetBalance,
   handleGetTransactions,
+  handleGetAccounts,
+  handleGetAssets,
+  handleGetItems,
 };

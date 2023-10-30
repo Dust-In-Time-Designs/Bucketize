@@ -67,7 +67,7 @@ const client = new PlaidApi(configuration);
 router.post('/info', function (request, response, next) {
   response.json({
     item_id: ITEM_ID,
-    access_token: ACCESS_TOKEN,
+    access_token: request.headers.access_token,
     products: PLAID_PRODUCTS,
   });
 });
@@ -99,7 +99,7 @@ router.post('/create_link_token', function (request, response, next) {
         configs.android_package_name = PLAID_ANDROID_PACKAGE_NAME;
       }
       const createTokenResponse = await client.linkTokenCreate(configs);
-      prettyPrintResponse(createTokenResponse);
+      // prettyPrintResponse(createTokenResponse);
       response.json(createTokenResponse.data);
     })
     .catch(next);
@@ -119,7 +119,7 @@ router.post('/set_access_token', function (request, response, next) {
       const tokenResponse = await client.itemPublicTokenExchange({
         public_token: PUBLIC_TOKEN,
       });
-      prettyPrintResponse(tokenResponse);
+      // prettyPrintResponse(tokenResponse);
       ACCESS_TOKEN = tokenResponse.data.access_token;
       ITEM_ID = tokenResponse.data.item_id;
       if (PLAID_PRODUCTS.includes(Products.Transfer)) {
@@ -161,7 +161,7 @@ router.get('/auth', function (request, response, next) {
   Promise.resolve()
     .then(async function () {
       const authResponse = await client.authGet({
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
       });
       // prettyPrintResponse(authResponse);
       response.json(authResponse.data);
@@ -220,7 +220,7 @@ router.get('/investments_transactions', function (request, response, next) {
       const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
       const endDate = moment().format('YYYY-MM-DD');
       const configs = {
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
         start_date: startDate,
         end_date: endDate,
       };
@@ -241,7 +241,7 @@ router.get('/identity', function (request, response, next) {
   Promise.resolve()
     .then(async function () {
       const identityResponse = await client.identityGet({
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
       });
       // prettyPrintResponse(identityResponse);
       response.json({identity: identityResponse.data.accounts});
@@ -257,7 +257,7 @@ router.get('/balance', function (request, response, next) {
       const balanceResponse = await client.accountsBalanceGet({
         access_token: request.headers.access_token,
       });
-      prettyPrintResponse(balanceResponse);
+      // prettyPrintResponse(balanceResponse);
       response.json(balanceResponse.data);
     })
     .catch(next);
@@ -269,7 +269,7 @@ router.get('/holdings', function (request, response, next) {
   Promise.resolve()
     .then(async function () {
       const holdingsResponse = await client.investmentsHoldingsGet({
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
       });
       // prettyPrintResponse(holdingsResponse);
       response.json({error: null, holdings: holdingsResponse.data});
@@ -283,7 +283,7 @@ router.get('/liabilities', function (request, response, next) {
   Promise.resolve()
     .then(async function () {
       const liabilitiesResponse = await client.liabilitiesGet({
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
       });
       // prettyPrintResponse(liabilitiesResponse);
       response.json({error: null, liabilities: liabilitiesResponse.data});
@@ -299,7 +299,7 @@ router.get('/item', function (request, response, next) {
       // Pull the Item - this includes information about available products,
       // billed products, webhook information, and more.
       const itemResponse = await client.itemGet({
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
       });
       // Also pull information about the institution
       const configs = {
@@ -307,7 +307,7 @@ router.get('/item', function (request, response, next) {
         country_codes: PLAID_COUNTRY_CODES,
       };
       const instResponse = await client.institutionsGetById(configs);
-      // prettyPrintResponse(itemResponse);
+      prettyPrintResponse(itemResponse);
       response.json({
         item: itemResponse.data.item,
         institution: instResponse.data.institution,
@@ -322,9 +322,9 @@ router.get('/accounts', function (request, response, next) {
   Promise.resolve()
     .then(async function () {
       const accountsResponse = await client.accountsGet({
-        access_token: ACCESS_TOKEN,
+        access_token: request.headers.access_token,
       });
-      // prettyPrintResponse(accountsResponse);
+      prettyPrintResponse(accountsResponse);
       response.json(accountsResponse.data);
     })
     .catch(next);
@@ -358,12 +358,12 @@ router.get('/assets', function (request, response, next) {
         },
       };
       const configs = {
-        access_tokens: [ACCESS_TOKEN],
+        access_tokens: request.headers.access_token,
         days_requested: daysRequested,
         options,
       };
       const assetReportCreateResponse = await client.assetReportCreate(configs);
-      // prettyPrintResponse(assetReportCreateResponse);
+      prettyPrintResponse(assetReportCreateResponse);
       const assetReportToken =
         assetReportCreateResponse.data.asset_report_token;
       const getResponse = await getAssetReportWithRetries(
@@ -377,8 +377,8 @@ router.get('/assets', function (request, response, next) {
       const pdfResponse = await client.assetReportPdfGet(pdfRequest, {
         responseType: 'arraybuffer',
       });
-      // prettyPrintResponse(getResponse);
-      // prettyPrintResponse(pdfResponse);
+      prettyPrintResponse(getResponse);
+      prettyPrintResponse(pdfResponse);
       response.json({
         json: getResponse.data.report,
         pdf: pdfResponse.data.toString('base64'),

@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {colorStyles, styles} from '../styles';
 import {handleGetBalance} from '../services/plaidService';
 import {User} from '../models/user';
+import {PlaidAccount} from '../types';
 
 type Params = {
   accessToken: string;
@@ -11,10 +12,21 @@ type Params = {
   user: User;
 };
 
-const Balance = ({accessToken, itemId, user}: Params) => {
-  const [data, setData] = useState(null);
+const Balance = ({accessToken, user}: Params) => {
+  const [data, setData] = useState<PlaidAccount[] | null>(null);
 
-  const renderItem = ({item}) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      if (data == null) {
+        const balance = await handleGetBalance(user.accessToken, accessToken);
+        setData(balance.accounts);
+      }
+    };
+
+    fetchData();
+  }, [data, accessToken, user]);
+
+  const renderItem = ({item}: {item: PlaidAccount}) => {
     return (
       <View style={styles.balanceCardContainer}>
         <LinearGradient
@@ -24,29 +36,18 @@ const Balance = ({accessToken, itemId, user}: Params) => {
           <View style={styles.balanceCard}>
             <View style={styles.balanceType}>
               <View>
-                <Text
-                  style={{fontSize: 12, fontWeight: '600', color: '#1E1E2D'}}>
-                  Account Name
-                </Text>
+                <Text style={styles.balanceHeader}>Account Name</Text>
                 <Text style={styles.balanceText}>{item.name}</Text>
               </View>
 
               <View>
-                <Text
-                  style={{fontSize: 12, fontWeight: '600', color: '#1E1E2D'}}>
-                  Type
-                </Text>
+                <Text style={styles.balanceHeader}>Type</Text>
                 <Text style={styles.balanceText}>{item.subtype}</Text>
               </View>
             </View>
 
             <View style={styles.balanceAvailable}>
-              <Text
-                style={{
-                  fontSize: 30,
-                  fontWeight: '600',
-                  color: '#1E1E2D',
-                }}>
+              <Text style={styles.balanceHeaderLarge}>
                 $ {item.balances?.available}
               </Text>
 
@@ -60,18 +61,10 @@ const Balance = ({accessToken, itemId, user}: Params) => {
     );
   };
 
-  useEffect(() => {
-    return async () => {
-      if (data == null) {
-        const balance = await handleGetBalance(user.accessToken, accessToken);
-        setData(balance);
-      }
-    };
-  }, [data, accessToken, user]);
   return (
     <View>
       <FlatList
-        data={data?.accounts}
+        data={data}
         renderItem={renderItem}
         keyExtractor={item => item.account_id}
         maxToRenderPerBatch={4}

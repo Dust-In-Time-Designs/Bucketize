@@ -8,15 +8,18 @@ import {
   handleCreateLinkToken,
   handleRetrieveAccessToken,
   handleSetAccessToken,
-} from '../services/plaidService'; // Import the necessary functions
+} from '../services/plaidService';
 import {PlaidScreenRouteProp, WalletDetails} from '../types';
 import {State} from '../store/reducers';
 
 const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
-  const [linkToken, setLinkToken] = useState(null);
+  const [linkToken, setLinkToken] = useState<string | null>(null);
   const {user} = useSelector((state: State) => state.auth);
-  const [walletDetails, setWalletDetails] = useState<WalletDetails>();
+  const [walletDetails, setWalletDetails] = useState<WalletDetails>({
+    accessToken: '',
+    itemId: '',
+  });
 
   const createLinkToken = useCallback(async () => {
     try {
@@ -48,35 +51,42 @@ const PlaidScreen = () => {
 
   return (
     <View style={styles.plaidButtonContainer}>
-      <PlaidLink
-        tokenConfig={{
-          token: linkToken,
-          noLoadingState: false,
-        }}
-        onSuccess={async success => {
-          try {
-            const data = await handleSetAccessToken(success.publicToken);
-            console.log('response data: ', data, 'response data[0]: ', data[0]);
-            setWalletDetails({
-              accessToken: data[0].plaid_access_token,
-              itemId: data[0].plaid_item_id,
+      {linkToken && (
+        <PlaidLink
+          tokenConfig={{
+            token: linkToken,
+            noLoadingState: false,
+          }}
+          onSuccess={async success => {
+            try {
+              const data = await handleSetAccessToken(success.publicToken);
+              console.log(
+                'response data: ',
+                data,
+                'response data[0]: ',
+                data[0],
+              );
+              setWalletDetails({
+                accessToken: data[0].plaid_access_token,
+                itemId: data[0].plaid_item_id,
+              });
+            } catch (err) {
+              console.log(err);
+            }
+            navigation.navigate('WalletDetails', {
+              accessToken: walletDetails.accessToken,
+              itemId: walletDetails.itemId,
             });
-          } catch (err) {
-            console.log(err);
-          }
-          navigation.navigate('WalletDetails', {
-            accessToken: walletDetails.accessToken,
-            itemId: walletDetails.itemId,
-          });
-        }}
-        onExit={response => {
-          console.log(response);
-        }}>
-        <View style={styles.plaidButton}>
-          <Text style={styles.plaidButtonText}>Connect Bank Accounts</Text>
-          <Image source={require('../assets/next.png')} />
-        </View>
-      </PlaidLink>
+          }}
+          onExit={response => {
+            console.log(response);
+          }}>
+          <View style={styles.plaidButton}>
+            <Text style={styles.plaidButtonText}>Connect Bank Accounts</Text>
+            <Image source={require('../assets/next.png')} />
+          </View>
+        </PlaidLink>
+      )}
     </View>
   );
 };
