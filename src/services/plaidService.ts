@@ -42,6 +42,22 @@ const handleSetAccessToken = async (publicToken: string) => {
   }
 };
 
+const handleInitializeData = async (publicToken: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/initialize_data`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({public_token: publicToken}),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const handleRetrieveAccessToken = async (token: string) => {
   try {
     const response = await fetch(`${API_URL}/api/plaid/retrieve_access_token`, {
@@ -72,6 +88,7 @@ const handleGetBalance = async (
   authToken: string,
   plaidAccessToken: string,
 ) => {
+  console.log('getting balances');
   try {
     const response = await fetch(`${API_URL}/api/plaid/balance`, {
       method: 'GET',
@@ -81,10 +98,14 @@ const handleGetBalance = async (
         Authorization: `Bearer ${authToken}`,
       },
     });
+    console.log('respoinse: ', response);
+
     const data = await response.json();
+    console.log(data);
     return data;
   } catch (error) {
-    return null;
+    console.log(error)
+    return 'null';
   }
 };
 
@@ -155,7 +176,7 @@ const handleGetItems = async (authToken: string, plaidAccessToken: string) => {
         Authorization: `Bearer ${authToken}`,
       },
     });
-    console.log(response)
+    console.log(response);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -174,4 +195,5 @@ export {
   handleGetAccounts,
   handleGetAssets,
   handleGetItems,
+  handleInitializeData,
 };

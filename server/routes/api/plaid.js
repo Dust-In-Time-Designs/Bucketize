@@ -67,7 +67,7 @@ const client = new PlaidApi(configuration);
 router.post('/info', function (request, response, next) {
   response.json({
     item_id: ITEM_ID,
-    access_token: request.headers.access_token,
+    access_token: ACCESS_TOKEN,
     products: PLAID_PRODUCTS,
   });
 });
@@ -110,6 +110,7 @@ router.post('/create_link_token', function (request, response, next) {
 // https://plaid.com/docs/#exchange-token-flow
 router.post('/set_access_token', function (request, response, next) {
   PUBLIC_TOKEN = request.body.public_token;
+  console.log(PUBLIC_TOKEN);
   Promise.resolve()
     .then(async function () {
       const {data: user, error} = await supabase.from('users').select();
@@ -140,6 +141,143 @@ router.post('/set_access_token', function (request, response, next) {
       response.json(item);
     })
     .catch(next);
+});
+
+const getAllTransactions = async token => {
+  let cursor = null;
+
+  // New transaction updates since "cursor"
+  let added = [];
+  let modified = [];
+  // Removed transaction ids
+  let removed = [];
+  let hasMore = true;
+  // Iterate through each page of new transaction updates for item
+  while (hasMore) {
+    const req = {
+      access_token: token,
+      cursor: cursor,
+    };
+    const res = await client.transactionsSync(req);
+    const data = res.data;
+    // Add this page of results
+    added = added.concat(data.added);
+    modified = modified.concat(data.modified);
+    removed = removed.concat(data.removed);
+    hasMore = data.has_more;
+    // Update cursor to the next cursor
+    cursor = data.next_cursor;
+  }
+
+  const compareTxnsByDateAscending = (a, b) =>
+    (a.date > b.date) - (a.date < b.date);
+  // Return the 8 most recent transactions
+  return [...added].sort(compareTxnsByDateAscending);
+};
+
+//testing combined route
+router.post('/initialize_data', async function (request, response, next) {
+  console.log('initializing data');
+  try {
+    // Extract public token from the request
+    PUBLIC_TOKEN = request.body.public_token;
+    console.log(PUBLIC_TOKEN);
+    // Exchange public token for access token
+    const tokenResponse = await client.itemPublicTokenExchange({
+      public_token: PUBLIC_TOKEN,
+    });
+    ACCESS_TOKEN = tokenResponse.data.access_token;
+    ITEM_ID = tokenResponse.data.item_id;
+    // Fetch user from supabase
+    const {data: user, error: userError} = await supabase
+      .from('users')
+      .select();
+    if (userError) {
+      throw userError;
+    }
+    if (user.plaid_access_token == null) {
+      await supabase
+        .from('users')
+        .update({
+          plaid_access_token: ACCESS_TOKEN,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user[0].user_id)
+        .select();
+    }
+
+    // If Products.Transfer is in PLAID_PRODUCTS, authorize and create transfer
+    if (PLAID_PRODUCTS.includes(Products.Transfer)) {
+      TRANSFER_ID = await authorizeAndCreateTransfer(ACCESS_TOKEN);
+    }
+
+    // Fetch transactions and balance in parallel
+
+    const transactions = await getAllTransactions(ACCESS_TOKEN);
+    const balanceRes = await client.accountsBalanceGet({
+      access_token: ACCESS_TOKEN,
+    });
+
+    const {data: item, error: itemError} = await supabase
+      .from('items')
+      .insert({
+        user_id: user[0].user_id,
+        plaid_item_id: ITEM_ID,
+        status: 'good',
+      })
+      .select();
+
+    balanceRes.data.accounts.map(async account => {
+      await supabase
+        .from('accounts')
+        .insert({
+          item_id: ITEM_ID,
+          plaid_account_id: account.account_id,
+          name: account.name,
+          mask: account.mask,
+          official_name: account.official_name,
+          type: account.type,
+          subtype: account.subtype,
+          balances: account.balances,
+        })
+        .select();
+    });
+    transactions.map(async transaction => {
+      await supabase
+        .from('transactions')
+        .insert({
+          account_id: transaction.account_id,
+          plaid_transaction_id: transaction.transaction_id,
+          category: transaction.personal_finance_category,
+          category_icon_url: transaction.personal_finance_category_icon_url,
+          type: transaction.type,
+          name: transaction.name,
+          amount: transaction.amount,
+          iso_currency_code: transaction.iso_currency_code,
+          unofficial_currency_code: transaction.unofficial_currency_code,
+          date: transaction.date,
+          pending: transaction.pending,
+          account_owner: transaction.account_owner,
+          authorized_date: transaction.authorized_date,
+          merchant_name: transaction.merchant_name,
+          original_description: transaction.original_description,
+          logo_url: transaction.logo_url,
+          website: transaction.website,
+          counterparties: transaction.counterparties,
+          location: transaction.location,
+          payment_meta: transaction.payment_meta,
+        })
+        .select();
+    });
+    // Return combined data to frontend
+    response.json({
+      item,
+      latest_transactions: transactions,
+      balance: balanceRes.data,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 //Retrieve a access_token
@@ -198,7 +336,7 @@ router.get('/transactions', function (request, response, next) {
         hasMore = data.has_more;
         // Update cursor to the next cursor
         cursor = data.next_cursor;
-        // prettyPrintResponse(response);
+        prettyPrintResponse(response);
       }
 
       const compareTxnsByDateAscending = (a, b) =>
@@ -251,16 +389,16 @@ router.get('/identity', function (request, response, next) {
 
 // Retrieve real-time Balances for each of an Item's accounts
 // https://plaid.com/docs/#balance
-router.get('/balance', function (request, response, next) {
-  Promise.resolve()
-    .then(async function () {
-      const balanceResponse = await client.accountsBalanceGet({
-        access_token: request.headers.access_token,
-      });
-      // prettyPrintResponse(balanceResponse);
-      response.json(balanceResponse.data);
-    })
-    .catch(next);
+router.get('/balance', async function (request, response, next) {
+  const {data: account, error: accountError} = await supabase
+    .from('accounts')
+    .select();
+  if (accountError) {
+    console.log('accouint error: ', accountError);
+    return response.status(500).json({accountError});
+  }
+  console.log(account);
+  return account;
 });
 
 // Retrieve Holdings for an Item

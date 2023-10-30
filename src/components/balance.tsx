@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {colorStyles, styles} from '../styles';
 import {handleGetBalance} from '../services/plaidService';
 import {User} from '../models/user';
-import {PlaidAccount} from '../types';
+import {PlaidAccount, PlaidBalance} from '../types';
 
 type Params = {
   accessToken: string;
@@ -14,12 +14,16 @@ type Params = {
 
 const Balance = ({accessToken, user}: Params) => {
   const [data, setData] = useState<PlaidAccount[] | null>(null);
-
+  console.log('data', data)
   useEffect(() => {
     const fetchData = async () => {
+      console.log('fetching data')
       if (data == null) {
+        console.log('data null')
         const balance = await handleGetBalance(user.accessToken, accessToken);
-        setData(balance.accounts);
+        console.log('balances: ', balance);
+
+        setData(balance);
       }
     };
 

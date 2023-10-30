@@ -84,13 +84,10 @@ export type PlaidTransaction = {
   account_owner: string | null;
   amount: number;
   authorized_date: string | null;
-  authorized_datetime: string | null;
-  check_number: string | null;
   iso_currency_code: string | null;
   unofficial_currency_code: string | null;
   counterparties: PlaidCounterparty[];
   date: string;
-  datetime: string | null;
   location: PlaidLocation;
   name: string;
   merchant_name: string | null;
@@ -104,8 +101,10 @@ export type PlaidTransaction = {
   pending_transaction_id: string | null;
   personal_finance_category: PlaidPersonalFinanceCategory | null;
   personal_finance_category_icon_url: string;
-  transaction_id: string;
-  transaction_code: string | null;
+  plaid_transaction_id: string;
+  type: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type PlaidBalance = {
@@ -119,6 +118,7 @@ export type PlaidBalance = {
 
 export type PlaidAccount = {
   account_id: string;
+  item_id: string;
   balances: PlaidBalance;
   mask: string | null;
   name: string;

@@ -18,7 +18,7 @@ const WalletDetailsScreen = ({route}: WalletDetailsScreenRouteProp) => {
           <Text style={styles.walletHeading}>Wallet Balance</Text>
         </View>
         <Balance accessToken={accessToken} itemId={itemId} user={user} />
-        <Items accessToken={accessToken} itemId={itemId} user={user} />
+        {/* <Items accessToken={accessToken} itemId={itemId} user={user} /> */}
       </View>
       <View style={styles.walletTransactions}>
         <View style={{marginVertical: 10}}>

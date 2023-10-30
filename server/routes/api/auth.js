@@ -18,7 +18,6 @@ router.post('/register', async (req, res) => {
   });
 
   if (error) {
-    console.log(error);
     return res.status(500).json({error: 'Internal server error'});
   } else {
     const user = data.user;
@@ -39,6 +38,7 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const {email, password} = req.body;
+
   const {data, error} = await supabase.auth.signInWithPassword({
     email,
     password,

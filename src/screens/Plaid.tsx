@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import {styles} from '../styles';
 import {
   handleCreateLinkToken,
+  handleInitializeData,
   handleRetrieveAccessToken,
   handleSetAccessToken,
 } from '../services/plaidService';
@@ -21,6 +22,7 @@ const PlaidScreen = () => {
     itemId: '',
   });
 
+  console.log(walletDetails)
   const createLinkToken = useCallback(async () => {
     try {
       const data = await handleCreateLinkToken(user.accessToken);
@@ -59,17 +61,7 @@ const PlaidScreen = () => {
           }}
           onSuccess={async success => {
             try {
-              const data = await handleSetAccessToken(success.publicToken);
-              console.log(
-                'response data: ',
-                data,
-                'response data[0]: ',
-                data[0],
-              );
-              setWalletDetails({
-                accessToken: data[0].plaid_access_token,
-                itemId: data[0].plaid_item_id,
-              });
+              const data = await handleInitializeData(success.publicToken);
             } catch (err) {
               console.log(err);
             }
