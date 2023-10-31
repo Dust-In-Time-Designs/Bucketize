@@ -70,6 +70,7 @@ function App() {
           <RootStack.Screen
             name="WalletDetails"
             component={WalletDetailsScreen}
+            initialParams={{accessToken: undefined, itemId: undefined}}
           />
         </RootStack.Navigator>
       </NavigationContainer>

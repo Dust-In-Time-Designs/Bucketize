@@ -1,51 +1,27 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text} from 'react-native';
 import Transactions from '../components/transactions';
 import Balance from '../components/balance';
-import { State } from '../store/reducers';
-// import {WalletDetailsScreenRouteProp} from '../types';
-// import { useNavigation } from '@react-navigation/native';
-import {colorStyles} from '../styles';
+import {styles} from '../styles';
 
 const WalletDetailsScreen = () => {
-  // const navigation = useNavigation<WalletDetailsScreenRouteProp>();
-  const {plaid} = useSelector((state: State) => state.plaid);
   return (
-    <View style={styles.container}>
-      <View style={styles.balance}>
+    <View style={styles.walletContainer}>
+      <View style={styles.walletBalance}>
         <View style={{marginVertical: 10}}>
-          <Text style={styles.heading}>Wallet Balance</Text>
+          <Text style={styles.walletHeading}>Wallet Balance</Text>
         </View>
         <Balance />
+        {/* <Items accessToken={accessToken} itemId={itemId} user={user} /> */}
       </View>
-      {/* <View style={styles.transactions}>
+      <View style={styles.walletTransactions}>
         <View style={{marginVertical: 10}}>
-          <Text style={styles.heading}>Last Transactions</Text>
+          <Text style={styles.walletHeading}>Last Transactions</Text>
         </View>
         <Transactions />
-      </View> */}
+      </View>
     </View>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  heading: {
-    color: colorStyles.secondaryAccent,
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  transactions: {
-    paddingBottom: 50,
-    height: '75%',
-  },
-  balance: {
-    height: '25%',
-    width: '100%',
-  },
-});
 
 export default WalletDetailsScreen;

@@ -1,33 +1,27 @@
-import React, {useCallback, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text} from 'react-native';
-import {useSelector} from 'react-redux';
-import {State} from '../store/reducers';
-import {API_URL} from '@env';
+import {handleGetAccounts} from '../services/plaidService';
+import {User} from '../models/user';
+import {PlaidAccount} from '../types';
 
-const Accounts = () => {
-  const [data, setData] = useState(null);
-  const {accessToken, itemId} = useSelector((state: State) => state.plaid);
+type Params = {
+  accessToken: string;
+  itemId: string;
+  user: User;
+};
 
-  const getAccounts = useCallback(async () => {
-    await fetch(`http://${API_URL}:8080/api/accounts`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        access_token: accessToken,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('🚀 getTransactions', data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
+const Accounts = ({accessToken, user}: Params) => {
+  const [data, setData] = useState<PlaidAccount[] | null>(null);
+
   useEffect(() => {
-    getAccounts();
-  }, []);
-  console.log('WalletDetails from wallteDetals ', data);
+    const fetchAccounts = async () => {
+      if (data == null) {
+        const accounts = await handleGetAccounts(user.accessToken, accessToken);
+        setData(accounts);
+      }
+    };
+    fetchAccounts();
+  }, [accessToken, data, user]);
   return (
     <View>
       <Text>data</Text>

@@ -1,53 +1,32 @@
-import React, {useCallback, useState, useEffect} from 'react';
-import {View, Text, FlatList, StyleSheet, Image} from 'react-native';
-import {useSelector} from 'react-redux';
-import {State} from '../store/reducers';
-import {API_URL} from '@env';
-import { colorStyles } from '../styles';
+import React, {useState, useEffect} from 'react';
+import {View, Text, FlatList, Image} from 'react-native';
+import {styles} from '../styles';
+import {handleGetTransactions} from '../services/plaidService';
+import {PlaidTransaction} from '../types';
 
 const Transactions = () => {
-  const [transactionData, setTransactionData] = useState(null);
-  const {accessToken, itemId} = useSelector((state: State) => state.plaid);
-  const getTransactions = useCallback(async () => {
-    await fetch(`http://${API_URL}:8080/api/transactions`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        access_token: accessToken,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        setTransactionData(data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
-  console.log('🚀 ~ file: index.js:26 ~ getTransactions ', transactionData);
+  const [transactionData, setTransactionData] = useState<
+    PlaidTransaction[] | null
+  >(null);
 
   useEffect(() => {
-    if (transactionData == null) {
-      getTransactions();
-    }
+    const fetchTransactions = async () => {
+      if (transactionData == null) {
+        const data = await handleGetTransactions();
+        setTransactionData(data);
+      }
+    };
+
+    fetchTransactions();
   }, [transactionData]);
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item}: {item: PlaidTransaction}) => {
     return (
       <View style={styles.itemContainer}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            width: '40%',
-          }}>
+        <View style={styles.transactionIcon}>
           <Image
             source={require('../assets/cart.png')}
-            style={{
-              height: 24,
-              width: 24,
-              margin: 10,
-            }}
+            style={styles.transactionIconImg}
           />
           <View>
             <Text style={styles.fontStyle}>Merchant</Text>
@@ -58,13 +37,7 @@ const Transactions = () => {
           <Text style={styles.fontStyle}>Payment Mode</Text>
           <Text style={styles.text}>{item.payment_channel}</Text>
         </View>
-        <View
-          style={{
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            width: '30%',
-          }}>
+        <View style={styles.transactionIconSmall}>
           <Image source={require('../assets/wallet.png')} style={styles.icon} />
           <Text style={styles.text}>{item.amount}</Text>
         </View>
@@ -74,9 +47,9 @@ const Transactions = () => {
   return (
     <View style={{marginTop: 10}}>
       <FlatList
-        data={transactionData?.latest_transactions}
+        data={transactionData}
         renderItem={renderItem}
-        keyExtractor={item => item?.account_id}
+        keyExtractor={item => item?.plaid_transaction_id}
         maxToRenderPerBatch={5}
         initialNumToRender={10}
         style={{paddingTop: 10}}
@@ -84,34 +57,6 @@ const Transactions = () => {
       />
     </View>
   );
-}
-const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: 'row',
-    marginVertical: 5,
-    backgroundColor: colorStyles.mainAccent,
-    borderRadius: 10,
-    height: 100,
-  },
-  textView: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#fff',
-    fontSize: 10,
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    marginBottom: 5,
-  },
-
-  fontStyle: {
-    color: '#fff',
-    fontSize: 12,
-  },
-});
+};
 
 export default Transactions;

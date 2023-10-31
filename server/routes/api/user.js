@@ -1,17 +1,11 @@
 const express = require('express');
-const supabaseClient = require('@supabase/supabase-js');
 const supabase = require('../../config/supabase');
 
 const router = express.Router();
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
-
 router.post('/accounts', function (request, response, next) {
   Promise.resolve().then(async function () {
     const user = await supabase.from('accounts').select();
-    console.log('user? ', user);
-
     if (!user.data) {
       const {data, error} = await supabase
         .from('accounts')
@@ -28,7 +22,6 @@ router.post('/accounts', function (request, response, next) {
 });
 
 router.post('/:id/plaid_token', async function (request, response, next) {
-  console.log('in token store', request.body);
   try {
     const {data: user, error} = await supabase
       .from('accounts')
@@ -40,10 +33,8 @@ router.post('/:id/plaid_token', async function (request, response, next) {
       console.error('Error fetching user:', error);
       return response.json({error: 'Error fetching user'});
     }
-    console.log(user);
     if (user) {
       user.plaid_access_token = request.body.token;
-      console.log(user)
       const {data, error: updateError} = await supabase
         .from('accounts')
         .upsert(user)
@@ -54,10 +45,8 @@ router.post('/:id/plaid_token', async function (request, response, next) {
         return response.json({error: 'Error updating user'});
       }
 
-      console.log('data:', data);
       return response.json(data);
     } else {
-      console.log('User not found');
       return response.json({error: 'User not found'});
     }
   } catch (e) {

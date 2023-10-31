@@ -10,28 +10,19 @@ const handlePlaidInfo = async () => {
   }
 };
 
-const handleCreateLinkToken = async () => {
+const handleCreateLinkToken = async (token: String) => {
   try {
-    console.log('creating link token');
-    const response = await fetch(`${API_URL}/api/plaid/create_link_token`);
-    console.log(response)
+    const response = await fetch(`${API_URL}/api/plaid/create_link_token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = await response.json();
-    console.log('Plaid response: ', data);
-    return data;
+    return data.link_token;
   } catch (error) {
-    console.error(error);
-  }
-};
-
-const handleCreateLinkTokenForPayment = async () => {
-  try {
-    const response = await fetch(
-      `${API_URL}/api/plaid/create_link_token_for_payment`,
-    );
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
+    return null;
   }
 };
 
@@ -51,6 +42,38 @@ const handleSetAccessToken = async (publicToken: string) => {
   }
 };
 
+const handleInitializeData = async (publicToken: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/initialize_data`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({public_token: publicToken}),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleRetrieveAccessToken = async (token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/retrieve_access_token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const handlePlaidAuth = async () => {
   try {
     const response = await fetch(`${API_URL}/api/plaid/auth`);
@@ -61,13 +84,102 @@ const handlePlaidAuth = async () => {
   }
 };
 
-// Define other Plaid related functions similarly.
+const handleGetBalance = async () => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/balance`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+const handleGetTransactions = async () => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/transactions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+const handleGetAccounts = async (
+  authToken: string,
+  plaidAccessToken: string,
+) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/accounts`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: plaidAccessToken,
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+const handleGetAssets = async (authToken: string, plaidAccessToken: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/assets`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: plaidAccessToken,
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+const handleGetItems = async (authToken: string, plaidAccessToken: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/plaid/item`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: plaidAccessToken,
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    console.log(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
 
 export {
   handlePlaidInfo,
   handleCreateLinkToken,
-  handleCreateLinkTokenForPayment,
   handleSetAccessToken,
   handlePlaidAuth,
-  // Add other Plaid related functions here
+  handleRetrieveAccessToken,
+  handleGetBalance,
+  handleGetTransactions,
+  handleGetAccounts,
+  handleGetAssets,
+  handleGetItems,
+  handleInitializeData,
 };
