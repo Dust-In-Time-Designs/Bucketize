@@ -6,7 +6,7 @@ export type RootStackParamList = {
   Register: undefined;
   Login: undefined;
   Dashboard: undefined;
-  WalletDetails: {accessToken: string; itemId: string};
+  WalletDetails: undefined;
   Plaid: undefined;
 };
 

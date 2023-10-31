@@ -3,32 +3,20 @@ import {View, Text, FlatList} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {colorStyles, styles} from '../styles';
 import {handleGetBalance} from '../services/plaidService';
-import {User} from '../models/user';
-import {PlaidAccount, PlaidBalance} from '../types';
+import {PlaidAccount} from '../types';
 
-type Params = {
-  accessToken: string;
-  itemId: string;
-  user: User;
-};
-
-const Balance = ({accessToken, user}: Params) => {
+const Balance = () => {
   const [data, setData] = useState<PlaidAccount[] | null>(null);
-  console.log('data', data)
   useEffect(() => {
     const fetchData = async () => {
-      console.log('fetching data')
       if (data == null) {
-        console.log('data null')
-        const balance = await handleGetBalance(user.accessToken, accessToken);
-        console.log('balances: ', balance);
-
+        const balance = await handleGetBalance();
         setData(balance);
       }
     };
 
     fetchData();
-  }, [data, accessToken, user]);
+  }, [data]);
 
   const renderItem = ({item}: {item: PlaidAccount}) => {
     return (

@@ -175,7 +175,9 @@ const getAllTransactions = async token => {
   return [...added].sort(compareTxnsByDateAscending);
 };
 
-//testing combined route
+// Exchange token flow - exchange a Link public_token for
+// an API access_token and then fetch accounts, balances, and transactions
+// https://plaid.com/docs/#exchange-token-flow
 router.post('/initialize_data', async function (request, response, next) {
   console.log('initializing data');
   try {
@@ -211,7 +213,7 @@ router.post('/initialize_data', async function (request, response, next) {
       TRANSFER_ID = await authorizeAndCreateTransfer(ACCESS_TOKEN);
     }
 
-    // Fetch transactions and balance in parallel
+    // Fetch transactions and balance
 
     const transactions = await getAllTransactions(ACCESS_TOKEN);
     const balanceRes = await client.accountsBalanceGet({
@@ -309,45 +311,13 @@ router.get('/auth', function (request, response, next) {
 
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
-router.get('/transactions', function (request, response, next) {
-  Promise.resolve()
-    .then(async function () {
-      // Set cursor to empty to receive all historical updates
-      let cursor = null;
+router.get('/transactions', async function (request, response, next) {
+  const {data, error} = await supabase.from('transactions').select();
 
-      // New transaction updates since "cursor"
-      let added = [];
-      let modified = [];
-      // Removed transaction ids
-      let removed = [];
-      let hasMore = true;
-      // Iterate through each page of new transaction updates for item
-      while (hasMore) {
-        const req = {
-          access_token: request.headers.access_token,
-          cursor: cursor,
-        };
-        const res = await client.transactionsSync(req);
-        const data = res.data;
-        // Add this page of results
-        added = added.concat(data.added);
-        modified = modified.concat(data.modified);
-        removed = removed.concat(data.removed);
-        hasMore = data.has_more;
-        // Update cursor to the next cursor
-        cursor = data.next_cursor;
-        prettyPrintResponse(response);
-      }
-
-      const compareTxnsByDateAscending = (a, b) =>
-        (a.date > b.date) - (a.date < b.date);
-      // Return the 8 most recent transactions
-      const recently_added = [...added]
-        .sort(compareTxnsByDateAscending)
-        .slice(-8);
-      response.json({latest_transactions: recently_added});
-    })
-    .catch(next);
+  if (error) {
+    return response.status(500).json({error});
+  }
+  response.json(data);
 });
 
 // Retrieve Investment Transactions for an Item
@@ -393,12 +363,11 @@ router.get('/balance', async function (request, response, next) {
   const {data: account, error: accountError} = await supabase
     .from('accounts')
     .select();
+
   if (accountError) {
-    console.log('accouint error: ', accountError);
     return response.status(500).json({accountError});
   }
-  console.log(account);
-  return account;
+  response.json(account);
 });
 
 // Retrieve Holdings for an Item

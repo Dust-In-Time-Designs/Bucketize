@@ -84,42 +84,28 @@ const handlePlaidAuth = async () => {
   }
 };
 
-const handleGetBalance = async (
-  authToken: string,
-  plaidAccessToken: string,
-) => {
-  console.log('getting balances');
+const handleGetBalance = async () => {
   try {
     const response = await fetch(`${API_URL}/api/plaid/balance`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        access_token: plaidAccessToken,
-        Authorization: `Bearer ${authToken}`,
       },
     });
-    console.log('respoinse: ', response);
 
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
-    console.log(error)
-    return 'null';
+    return error;
   }
 };
 
-const handleGetTransactions = async (
-  authToken: string,
-  plaidAccessToken: string,
-) => {
+const handleGetTransactions = async () => {
   try {
     const response = await fetch(`${API_URL}/api/plaid/transactions`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        access_token: plaidAccessToken,
-        Authorization: `Bearer ${authToken}`,
       },
     });
     const data = await response.json();

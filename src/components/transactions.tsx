@@ -2,16 +2,9 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, Image} from 'react-native';
 import {styles} from '../styles';
 import {handleGetTransactions} from '../services/plaidService';
-import {User} from '../models/user';
 import {PlaidTransaction} from '../types';
 
-type Params = {
-  accessToken: string;
-  itemId: string;
-  user: User;
-};
-
-const Transactions = ({accessToken, user}: Params) => {
+const Transactions = () => {
   const [transactionData, setTransactionData] = useState<
     PlaidTransaction[] | null
   >(null);
@@ -19,13 +12,13 @@ const Transactions = ({accessToken, user}: Params) => {
   useEffect(() => {
     const fetchTransactions = async () => {
       if (transactionData == null) {
-        const data = await handleGetTransactions(user.accessToken, accessToken);
-        setTransactionData(data.latest_transactions);
+        const data = await handleGetTransactions();
+        setTransactionData(data);
       }
     };
 
     fetchTransactions();
-  }, [transactionData, user, accessToken]);
+  }, [transactionData]);
 
   const renderItem = ({item}: {item: PlaidTransaction}) => {
     return (
@@ -56,7 +49,7 @@ const Transactions = ({accessToken, user}: Params) => {
       <FlatList
         data={transactionData}
         renderItem={renderItem}
-        keyExtractor={item => item?.transaction_id}
+        keyExtractor={item => item?.plaid_transaction_id}
         maxToRenderPerBatch={5}
         initialNumToRender={10}
         style={{paddingTop: 10}}
