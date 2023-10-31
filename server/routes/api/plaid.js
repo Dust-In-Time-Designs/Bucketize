@@ -1,6 +1,5 @@
 const express = require('express');
 const {Configuration, PlaidApi, Products, PlaidEnvironments} = require('plaid');
-const moment = require('moment');
 const util = require('util');
 const supabase = require('../../config/supabase');
 
