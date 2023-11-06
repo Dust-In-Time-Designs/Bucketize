@@ -4,7 +4,6 @@ const {expect} = require('chai');
 const app = require('../server');
 const client = require('../config/plaid');
 const supabase = require('../config/supabase');
-const proxyquire = require('proxyquire');
 
 const mockToken = 'public_token_sample';
 const ACCESS_TOKEN = 'mock_access_token';
@@ -14,21 +13,7 @@ const mockItem = {
   plaid_item_id: 'mock_item_id',
   status: 'good',
 };
-const mockAccount = {
-  plaid_account_id: 'dVzbVMLjrxTnLjX4G66XUp5GLklm4oiZy88yK',
-  balances: {
-    available: null,
-    current: 410,
-    iso_currency_code: 'USD',
-    limit: 2000,
-    unofficial_currency_code: null,
-  },
-  mask: '3333',
-  name: 'Plaid Credit Card',
-  official_name: 'Plaid Diamond 12.5% APR Interest Credit Card',
-  subtype: 'credit card',
-  type: 'credit',
-};
+
 const mockTransaction = {
   account_id: 'BxBXxLj1m4HMXBm9WZZmCWVbPjX16EHwv99vp',
   account_owner: null,
@@ -82,11 +67,6 @@ const mockTransaction = {
   plaid_transaction_id: 'lPNjeW1nR6CDn5okmGQ6hEpMo4lLNoSrzqDje',
   original_description: 'Test Description.',
   type: 'online',
-};
-
-const mockTokenResponse = {
-  access_token: 'mock_access_token',
-  item_id: 'mock_item_id',
 };
 
 const mockBalanceResponse = {
@@ -191,7 +171,6 @@ describe('Plaid Routes', () => {
     });
 
     it('should return 500 if there is an error creating link token with Plaid', async () => {
-      // const mockUser = {user_id: '12345'};
       mockSupabase.select.resolves({data: [mockUser], error: null});
       client.linkTokenCreate.rejects(new Error('Plaid error'));
 
