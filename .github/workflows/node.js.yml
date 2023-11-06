@@ -12,6 +12,7 @@ env:
   PLAID_CLIENT_ID: ${{ secrets.PLAID_CLIENT_ID }}
   PLAID_SECRET: ${{ secrets.PLAID_SECRET }}
   PLAID_ENV: ${{ secrets.PLAID_ENV }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
 jobs:
   build:
