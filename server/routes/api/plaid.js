@@ -1,13 +1,10 @@
 const express = require('express');
-const {Configuration, PlaidApi, Products, PlaidEnvironments} = require('plaid');
+const {Products} = require('plaid');
 const util = require('util');
 const supabase = require('../../config/supabase');
+const client = require('../../config/plaid');
 
 const router = express.Router();
-
-const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
-const PLAID_SECRET = process.env.PLAID_SECRET;
-const PLAID_ENV = process.env.PLAID_ENV || 'sandbox';
 
 const PLAID_PRODUCTS = (
   process.env.PLAID_PRODUCTS || Products.Transactions
@@ -20,19 +17,6 @@ const PLAID_COUNTRY_CODES = (process.env.PLAID_COUNTRY_CODES || 'US').split(
 const PLAID_REDIRECT_URI = process.env.PLAID_REDIRECT_URI || '';
 
 const PLAID_ANDROID_PACKAGE_NAME = process.env.PLAID_ANDROID_PACKAGE_NAME || '';
-
-const configuration = new Configuration({
-  basePath: PlaidEnvironments[PLAID_ENV],
-  baseOptions: {
-    headers: {
-      'PLAID-CLIENT-ID': PLAID_CLIENT_ID,
-      'PLAID-SECRET': PLAID_SECRET,
-      'Plaid-Version': '2020-09-14',
-    },
-  },
-});
-
-const client = new PlaidApi(configuration);
 
 // Create a link token with configs which we can then use to initialize Plaid Link client-side.
 // See https://plaid.com/docs/#create-link-token
@@ -68,8 +52,9 @@ router.post('/create_link_token', async function (request, response, next) {
 
     // Attempt to create a Plaid link token
     const createTokenResponse = await client.linkTokenCreate(configs);
-    response.json(createTokenResponse.data);
+    response.json(createTokenResponse);
   } catch (err) {
+    console.log('error: ', err.message);
     if (err.message === 'Failed to fetch user data from the database.') {
       response.status(500).json({message: err.message});
     } else if (err.message === 'User not found.') {
@@ -93,6 +78,9 @@ router.post('/create_link_token', async function (request, response, next) {
 router.post('/set_access_token', async function (request, response, next) {
   try {
     const PUBLIC_TOKEN = request.body.public_token;
+    if (!PUBLIC_TOKEN) {
+      response.status(400).json({error: 'Public token not provided'});
+    }
 
     // Fetch user from Supabase
     const {data: user, error: userError} = await supabase
@@ -109,38 +97,24 @@ router.post('/set_access_token', async function (request, response, next) {
     const tokenResponse = await client.itemPublicTokenExchange({
       public_token: PUBLIC_TOKEN,
     });
+    if (!tokenResponse) {
+      throw new Error('Invalid public token provided');
+    }
 
-    const ACCESS_TOKEN = tokenResponse.data.access_token;
     const ITEM_ID = tokenResponse.data.item_id;
 
     // Insert the item into the database
     const {data: item, error: itemError} = await supabase.from('items').insert({
       user_id: user[0].user_id,
-      plaid_access_token: ACCESS_TOKEN,
       plaid_item_id: ITEM_ID,
       status: 'good',
     });
-
     if (itemError) {
       throw new Error('Failed to insert item into the database.');
     }
-
-    response.json(item);
+    response.json(item[0]);
   } catch (err) {
-    if (err.message === 'Failed to fetch user data from the database.') {
-      response.status(500).json({message: err.message});
-    } else if (err.message === 'User not found.') {
-      response.status(404).json({message: err.message});
-    } else if (
-      err.message.startsWith('Failed to insert item into the database.')
-    ) {
-      response.status(500).json({
-        message: 'Failed to insert item into the database.',
-        details: err.message,
-      });
-    } else {
-      next(err);
-    }
+    response.status(500).json({error: err.message});
   }
 });
 
@@ -166,25 +140,41 @@ const getAllTransactions = async token => {
 router.post('/initialize_data', async function (request, response, next) {
   try {
     const PUBLIC_TOKEN = request.body.public_token;
+    if (!PUBLIC_TOKEN) {
+      return response.status(400).json({error: 'Public token not provided'});
+    }
+
     const tokenResponse = await client.itemPublicTokenExchange({
       public_token: PUBLIC_TOKEN,
     });
+    if (!tokenResponse || !tokenResponse.data) {
+      throw new Error('Invalid public token provided');
+    }
 
     const ACCESS_TOKEN = tokenResponse.data.access_token;
-
     const {data: user, error: userError} = await supabase
       .from('users')
       .select();
-    if (userError) throw userError;
 
+    if (userError) {
+      throw new Error('Failed to fetch user data');
+    }
+
+    if (!user[0]) {
+      throw new Error('User not found');
+    }
     if (!user[0].plaid_access_token) {
-      await supabase
+      const {error: updateError} = await supabase
         .from('users')
         .update({
           plaid_access_token: ACCESS_TOKEN,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user[0].user_id);
+
+      if (updateError) {
+        throw new Error('Failed to update user access token');
+      }
     }
 
     const transactions = await getAllTransactions(ACCESS_TOKEN);
@@ -192,55 +182,67 @@ router.post('/initialize_data', async function (request, response, next) {
       access_token: ACCESS_TOKEN,
     });
 
+    if (!balanceRes || !balanceRes.data) {
+      throw new Error('Failed to get account balances');
+    }
+
     const {data: item, error: itemError} = await supabase.from('items').insert({
       user_id: user[0].user_id,
       plaid_item_id: tokenResponse.data.item_id,
       status: 'good',
     });
 
-    if (itemError) throw itemError;
+    if (itemError) {
+      throw new Error('Failed to insert item data');
+    }
 
-    await Promise.all(
-      balanceRes.data.accounts.map(account => {
-        return supabase.from('accounts').insert({
-          item_id: tokenResponse.data.item_id,
-          plaid_account_id: account.account_id,
-          name: account.name,
-          mask: account.mask,
-          official_name: account.official_name,
-          type: account.type,
-          subtype: account.subtype,
-          balances: account.balances,
-        });
-      }),
-    );
+    for (const account of balanceRes.data.accounts) {
+      const {error: accountError} = await supabase.from('accounts').insert({
+        item_id: tokenResponse.data.item_id,
+        plaid_account_id: account.account_id,
+        name: account.name,
+        mask: account.mask,
+        official_name: account.official_name,
+        type: account.type,
+        subtype: account.subtype,
+        balances: account.balances,
+      });
 
-    await Promise.all(
-      transactions.map(transaction => {
-        return supabase.from('transactions').insert({
+      if (accountError) {
+        throw new Error('Failed to insert account data');
+      }
+    }
+
+    for (const transaction of transactions) {
+      const {error: transactionError} = await supabase
+        .from('transactions')
+        .insert({
           account_id: transaction.account_id,
-          plaid_transaction_id: transaction.transaction_id,
-          category: transaction.personal_finance_category,
-          category_icon_url: transaction.personal_finance_category_icon_url,
-          type: transaction.type,
-          name: transaction.name,
+          account_owner: transaction.account_owner,
           amount: transaction.amount,
           iso_currency_code: transaction.iso_currency_code,
           unofficial_currency_code: transaction.unofficial_currency_code,
+          counterparties: transaction.counterparties,
           date: transaction.date,
-          pending: transaction.pending,
-          account_owner: transaction.account_owner,
           authorized_date: transaction.authorized_date,
+          location: transaction.location,
+          name: transaction.name,
           merchant_name: transaction.merchant_name,
-          original_description: transaction.original_description,
           logo_url: transaction.logo_url,
           website: transaction.website,
-          counterparties: transaction.counterparties,
-          location: transaction.location,
           payment_meta: transaction.payment_meta,
+          pending: transaction.pending,
+          category: transaction.personal_finance_category,
+          category_icon_url: transaction.personal_finance_category_icon_url,
+          plaid_transaction_id: transaction.transaction_id,
+          original_description: transaction.original_description,
+          type: transaction.payment_channel,
         });
-      }),
-    );
+
+      if (transactionError) {
+        throw new Error('Failed to insert transaction data');
+      }
+    }
 
     response.json({
       item,
@@ -248,7 +250,9 @@ router.post('/initialize_data', async function (request, response, next) {
       balance: balanceRes.data,
     });
   } catch (error) {
-    next(error);
+    response
+      .status(500)
+      .json({error: error.message || 'An unexpected error occurred'});
   }
 });
 
