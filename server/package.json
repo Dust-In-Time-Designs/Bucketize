@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --exit tests/*.test.js",
     "start": "node server.js"
   },
   "author": "",
@@ -19,6 +19,11 @@
     "express-session": "^1.17.3",
     "moment": "^2.29.4",
     "plaid": "^12.2.0",
-    "uuid": "^9.0.0"
+    "proxyquire": "^2.1.3",
+    "uuid": "^9.0.0",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "sinon": "^17.0.0",
+    "supertest": "^6.3.3"
   }
 }
