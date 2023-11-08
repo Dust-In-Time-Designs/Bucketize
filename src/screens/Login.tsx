@@ -30,7 +30,7 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (authUser) {
-      navigation.navigate('Dashboard');
+      navigation.replace('LoggedIn');
     }
   }, [navigation, authUser]);
 

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Provider} from 'react-redux';
 import {RootStackParamList} from './src/types';
 import {StatusBar} from 'react-native';
@@ -14,22 +15,36 @@ import PlaidScreen from './src/screens/Plaid';
 import {colorStyles} from './src/styles';
 
 export const RootStack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
+
+function LoggedInTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: colorStyles.secondaryGreen,
+        tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          backgroundColor: colorStyles.textOnSecondary,
+        },
+      }}>
+      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="WalletDetails" component={WalletDetailsScreen} />
+    </Tab.Navigator>
+  );
+}
 
 function App() {
   return (
     <Provider store={store}>
-      <StatusBar barStyle={'light-content'} />
+      <StatusBar barStyle={'dark-content'} />
       <NavigationContainer>
         <RootStack.Navigator
           initialRouteName="Register"
           screenOptions={{
             headerStyle: {
-              backgroundColor: colorStyles.mainAccent,
+              backgroundColor: colorStyles.textOnSecondary,
             },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
+            headerTintColor: colorStyles.secondaryGreen,
           }}>
           <RootStack.Screen
             name="Home"
@@ -52,14 +67,14 @@ function App() {
               title: '',
             }}
           />
-          <RootStack.Screen
+          {/* <RootStack.Screen
             name="Dashboard"
             component={DashboardScreen}
             options={{
               title: '',
               headerShown: false,
             }}
-          />
+          /> */}
           <RootStack.Screen
             name="Plaid"
             component={PlaidScreen}
@@ -67,10 +82,17 @@ function App() {
               title: '',
             }}
           />
-          <RootStack.Screen
+          {/* <RootStack.Screen
             name="WalletDetails"
             component={WalletDetailsScreen}
             initialParams={{accessToken: undefined, itemId: undefined}}
+          /> */}
+          <RootStack.Screen
+            name="LoggedIn"
+            component={LoggedInTabs}
+            options={{
+              headerShown: false,
+            }}
           />
         </RootStack.Navigator>
       </NavigationContainer>
