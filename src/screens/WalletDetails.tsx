@@ -6,18 +6,13 @@ import {styles} from '../styles';
 
 const WalletDetailsScreen = () => {
   return (
-    <View style={styles.walletContainer}>
+    <View style={styles.screenContainerLight}>
       <View style={styles.walletBalance}>
-        <View style={{marginVertical: 10}}>
-          <Text style={styles.walletHeading}>Wallet Balance</Text>
-        </View>
+        <Text style={styles.walletHeading}>Wallet Balance</Text>
         <Balance />
-        {/* <Items accessToken={accessToken} itemId={itemId} user={user} /> */}
       </View>
       <View style={styles.walletTransactions}>
-        <View style={{marginVertical: 10}}>
-          <Text style={styles.walletHeading}>Last Transactions</Text>
-        </View>
+        <Text style={styles.walletHeading}>Last Transactions</Text>
         <Transactions />
       </View>
     </View>

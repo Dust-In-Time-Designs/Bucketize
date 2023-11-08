@@ -19,8 +19,8 @@ const DashboardScreen = () => {
   }, [navigation, user]);
 
   return (
-    <View style={styles.screenContainer}>
-      <Text style={styles.appTitleText}>
+    <View style={styles.screenContainerLight}>
+      <Text style={styles.titleText}>
         {user && `Welcome ${user.firstName} ${user.lastName}!`}
       </Text>
       <PlaidScreen />

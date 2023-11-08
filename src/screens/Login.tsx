@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import {Button, Text, TextInput, View} from 'react-native';
+import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {LoginScreenRouteProp} from '../types';
 import {handleLogin} from '../services/userService';
@@ -36,42 +36,34 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.screenContainerLight}>
-      {error && (
-        <View>
-          <Text>{error}</Text>
-        </View>
-      )}
+      <Text style={styles.titleText}>Welcome Back!</Text>
+      {error && <Text style={styles.errorText}>{error}</Text>}
       <TextInput
         style={styles.input}
         onChangeText={setEmail}
         value={email}
         placeholder="Email"
+        placeholderTextColor={colorStyles.secondaryGreen}
         keyboardType="email-address"
+        secureTextEntry={false}
       />
       <TextInput
         style={styles.input}
         onChangeText={setPassword}
         value={password}
-        placeholder="password"
+        placeholder="Password"
+        placeholderTextColor={colorStyles.secondaryGreen}
         secureTextEntry={true}
       />
-      <View style={styles.buttonContainerWide}>
-        <Button
-          onPress={onSubmit}
-          title="Login"
-          color={colorStyles.secondaryText}
-          accessibilityLabel="Login for Bucketize"
-        />
-      </View>
+      <TouchableOpacity style={styles.buttonContainerWide} onPress={onSubmit}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
       <HorizontalRuleWithText text={'or'} />
-      <View style={styles.buttonContainerWideAlt}>
-        <Button
-          onPress={() => navigation.navigate('Register')}
-          title="Register"
-          color={colorStyles.secondaryAccent}
-          accessibilityLabel="Register for Bucketize"
-        />
-      </View>
+      <TouchableOpacity
+        style={styles.buttonContainerWideAlt}
+        onPress={() => navigation.navigate('Register')}>
+        <Text style={styles.buttonTextAlt}>Register for Bucketize</Text>
+      </TouchableOpacity>
     </View>
   );
 };

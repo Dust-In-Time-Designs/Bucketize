@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {PlaidLink} from 'react-native-plaid-link-sdk';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
@@ -42,7 +42,7 @@ const PlaidScreen = () => {
   }, [linkToken, createLinkToken, user, checkForPlaidItem]);
 
   return (
-    <View style={styles.plaidButtonContainer}>
+    <View style={styles.screenContainerLight}>
       {linkToken && (
         <PlaidLink
           tokenConfig={{
@@ -55,10 +55,10 @@ const PlaidScreen = () => {
           onExit={response => {
             console.log(response);
           }}>
-          <View style={styles.plaidButton}>
+          <TouchableOpacity style={styles.plaidButton}>
             <Text style={styles.plaidButtonText}>Connect Bank Accounts</Text>
-            <Image source={require('../assets/next.png')} />
-          </View>
+            <Image source={require('../assets/next.png')} style={styles.icon} />
+          </TouchableOpacity>
         </PlaidLink>
       )}
     </View>

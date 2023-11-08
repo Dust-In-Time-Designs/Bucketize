@@ -1,120 +1,149 @@
 import {StyleSheet} from 'react-native';
 
 export const colorStyles = {
-  background: '#62C370',
-  mainText: '#F6F4F3',
-  secondaryText: '#F6F4F3',
-  mainAccent: '#62C370',
-  secondaryAccent: '#183059',
-  minorAccent: '#edb06f',
+  primaryGreen: '#62C370',
+  secondaryGreen: '#2F7766',
+  textOnPrimary: '#F6F4F3',
+  textOnSecondary: '#ffffff',
+  accentBlue: '#183059',
+  offWhite: '#F6F4F3',
+  darkText: '#1E1E2D',
 };
 export const styles = StyleSheet.create({
   screenContainer: {
-    backgroundColor: colorStyles.background,
+    backgroundColor: colorStyles.primaryGreen,
     flex: 1,
-    padding: 10,
     alignItems: 'center',
-    width: '100%',
+    justifyContent: 'center',
+    padding: 20,
   },
   screenContainerLight: {
-    backgroundColor: colorStyles.mainText,
+    backgroundColor: colorStyles.textOnPrimary,
     flex: 1,
-    padding: 10,
     alignItems: 'center',
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dateContainer: {
-    width: '100%',
-  },
-  buttonSection: {
-    paddingVertical: 30,
     justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    // flexDirection: 'row',
+    padding: 20,
   },
-  buttonContainer: {
-    backgroundColor: colorStyles.secondaryAccent,
-    width: '30%',
-    borderRadius: 5,
-    paddingVertical: 5,
-    margin: 10,
-  },
-  buttonContainerWide: {
-    backgroundColor: colorStyles.secondaryAccent,
-    width: '100%',
-    borderRadius: 5,
-    paddingVertical: 5,
-    margin: 10,
-  },
-  buttonContainerWideAlt: {
-    backgroundColor: colorStyles.mainText,
-    borderColor: colorStyles.secondaryAccent,
-    borderWidth: 2,
-    width: '100%',
-    borderRadius: 5,
-    paddingVertical: 5,
-    margin: 10,
-  },
-  appTitleView: {
-    marginTop: 20,
-    justifyContent: 'center',
+  inputRow: {
     flexDirection: 'row',
-  },
-  appTitleText: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: colorStyles.secondaryAccent,
-    textAlign: 'center',
-  },
-  appText: {
-    fontSize: 18,
-    fontWeight: '500',
-    textAlign: 'center',
-    color: colorStyles.minorAccent,
   },
   input: {
+    width: '90%',
+    marginVertical: 10,
+    padding: 15,
+    backgroundColor: colorStyles.offWhite,
+    borderRadius: 5,
+    fontSize: 16,
+    color: colorStyles.darkText,
+    borderWidth: 1,
+    borderColor: colorStyles.lighterGreen,
+  },
+  inputShort: {
+    width: '42%',
+    margin: 10,
+    padding: 15,
+    backgroundColor: colorStyles.offWhite,
+    borderRadius: 5,
+    fontSize: 16,
+    color: colorStyles.darkText,
+    borderWidth: 1,
+    borderColor: colorStyles.lighterGreen,
+  },
+  buttonContainerWide: {
+    backgroundColor: colorStyles.primaryGreen,
+    width: '90%',
+    borderRadius: 5,
+    paddingVertical: 12,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: colorStyles.darkText,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  buttonContainerWideAlt: {
+    backgroundColor: colorStyles.secondaryGreen,
+    width: '90%',
+    borderRadius: 5,
+    paddingVertical: 12,
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: colorStyles.textOnPrimary,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  buttonTextAlt: {
+    color: colorStyles.textOnSecondary,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colorStyles.secondaryGreen,
+    marginBottom: 20,
+  },
+  subtitleText: {
+    fontSize: 18,
+    fontWeight: 'normal',
+    color: colorStyles.textOnPrimary,
+    marginBottom: 4,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: colorStyles.secondaryGreen,
+    backgroundColor: colorStyles.offWhite,
+    borderRadius: 5,
+  },
+
+  errorText: {
+    fontSize: 14,
+    color: 'red',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    backgroundColor: 'rgba(255,0,0,0.2)',
+    textAlign: 'center',
     width: '100%',
-    margin: 4,
-    padding: 8,
-    // backgroundColor: colorStyles.mainText,
-    borderBottomWidth: 1,
-    borderBottomColor: colorStyles.mainAccent,
   },
   horizontalRuleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical: 20,
   },
   horizontalRule: {
     flex: 1,
     height: 1,
-    backgroundColor: 'black',
+    backgroundColor: colorStyles.secondaryGreen,
   },
   horizontalRuleText: {
-    // width: 50,
-    textAlign: 'center',
     paddingHorizontal: 8,
+    fontSize: 16,
+    color: colorStyles.secondaryGreen,
   },
   wideContainer: {
     width: '100%',
     paddingHorizontal: 5,
   },
   plaidContainer: {
-    backgroundColor: 'red',
+    backgroundColor: colorStyles.primaryGreen,
   },
   plaidTextView: {
     width: '100%',
     paddingVertical: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colorStyles.offWhite,
   },
   plaidTextStyle: {
     fontSize: 24,
     fontWeight: '600',
+    color: colorStyles.darkText,
   },
   plaidButtonContainer: {
     justifyContent: 'center',
@@ -122,7 +151,7 @@ export const styles = StyleSheet.create({
     height: '80%',
   },
   plaidButtonText: {
-    color: colorStyles.mainText,
+    color: colorStyles.offWhite,
     fontWeight: '600',
     fontSize: 20,
   },
@@ -132,13 +161,13 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 40,
     paddingVertical: 15,
-    backgroundColor: colorStyles.mainAccent,
+    backgroundColor: colorStyles.primaryBlue,
     borderRadius: 10,
   },
   balanceItemContainer: {
     flexDirection: 'row',
     marginVertical: 5,
-    backgroundColor: colorStyles.secondaryAccent,
+    backgroundColor: colorStyles.secondaryGreen,
     borderRadius: 10,
     height: 100,
   },
@@ -148,7 +177,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   balanceText: {
-    color: '#1E1E2D',
+    color: colorStyles.offWhite,
     fontSize: 10,
   },
   balanceIcon: {
@@ -170,7 +199,7 @@ export const styles = StyleSheet.create({
   balanceGradientCard: {
     height: 150,
     width: '100%',
-    borderColor: colorStyles.mainAccent,
+    borderColor: colorStyles.primaryGreen,
     borderWidth: 5,
   },
   balanceAvailable: {
@@ -186,11 +215,10 @@ export const styles = StyleSheet.create({
     height: '30%',
     paddingHorizontal: 10,
   },
-  // ----- Transaction styles ------------
   itemContainer: {
     flexDirection: 'row',
     marginVertical: 5,
-    backgroundColor: colorStyles.mainAccent,
+    backgroundColor: colorStyles.primaryGreen,
     borderRadius: 10,
     height: 100,
   },
@@ -200,7 +228,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#fff',
+    color: colorStyles.offWhite,
     fontSize: 10,
   },
   icon: {
@@ -208,23 +236,9 @@ export const styles = StyleSheet.create({
     height: 20,
     marginBottom: 5,
   },
-
   fontStyle: {
-    color: '#fff',
+    color: colorStyles.offWhite,
     fontSize: 12,
-  },
-
-  transactionIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '40%',
-  },
-  transactionIconImg: {height: 24, width: 24, margin: 10},
-  transactionIconSmall: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    width: '30%',
   },
   walletContainer: {
     flex: 1,
@@ -234,6 +248,8 @@ export const styles = StyleSheet.create({
     color: colorStyles.secondaryAccent,
     fontSize: 20,
     fontWeight: '600',
+    padding: 10,
+    textAlign: 'center',
   },
   walletTransactions: {
     paddingBottom: 50,
@@ -243,10 +259,81 @@ export const styles = StyleSheet.create({
     height: '25%',
     width: '100%',
   },
-  balanceHeader: {fontSize: 12, fontWeight: '600', color: '#1E1E2D'},
+  balanceHeader: {fontSize: 12, fontWeight: '600', color: colorStyles.darkText},
   balanceHeaderLarge: {
     fontSize: 30,
     fontWeight: '600',
-    color: '#1E1E2D',
+    color: colorStyles.darkText,
+  },
+  balanceFlatList: {
+    paddingHorizontal: 10,
+  },
+  transactionItemContainer: {
+    backgroundColor: '#62C370',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  transactionIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '40%',
+  },
+  transactionMerchantText: {
+    color: '#F6F4F3',
+    fontSize: 14,
+  },
+  transactionMerchantName: {
+    color: '#F6F4F3',
+    fontWeight: 'bold',
+  },
+
+  transactionIconImg: {height: 24, width: 24, margin: 10},
+  transactionIconSmall: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    width: '30%',
+  },
+  transactionList: {
+    // If you want to add padding or other styling to the FlatList
+  },
+  transactionDetails: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+  },
+
+  transactionPaymentModeText: {
+    fontSize: 14,
+    color: '#183059',
+    marginBottom: 4,
+  },
+
+  transactionPaymentMode: {
+    fontSize: 12,
+    color: '#F6F4F3',
+  },
+
+  transactionAmountContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingRight: 10,
+  },
+
+  transactionAmountIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+  },
+
+  transactionAmountText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#F6F4F3',
   },
 });

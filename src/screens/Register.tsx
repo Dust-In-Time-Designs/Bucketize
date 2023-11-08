@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector} from 'react-redux';
-import {Button, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {handleRegister} from '../services/userService';
 import {CreateUser} from '../models/user';
@@ -66,93 +66,81 @@ const RegisterScreen = () => {
 
   return (
     <View style={styles.screenContainerLight}>
-      <View>
-        <Text style={styles.appTitleText}>Hey There!</Text>
+      <Text style={styles.titleText}>Hey There!</Text>
+      {error && <Text style={styles.errorText}>{error}</Text>}
+      <View style={styles.inputRow}>
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setFirstName}
+          value={firstName}
+          placeholder="First Name"
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setLastName}
+          value={lastName}
+          placeholder="Last Name"
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
       </View>
-      {error && (
-        <View>
-          <Text>{error}</Text>
-        </View>
-      )}
-      <TextInput
-        style={styles.input}
-        onChangeText={setFirstName}
-        value={firstName}
-        placeholder="First Name"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setLastName}
-        value={lastName}
-        placeholder="Last Name"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        placeholder="Email"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setPassword}
-        value={password}
-        placeholder="Password"
-        secureTextEntry={true}
-      />
+      <View style={styles.inputRow}>
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setEmail}
+          value={email}
+          placeholder="Email"
+          keyboardType="email-address"
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setPassword}
+          value={password}
+          placeholder="Password"
+          secureTextEntry={true}
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
+      </View>
+
       <TextInput
         style={styles.input}
         onChangeText={setPhoneNumber}
         value={phoneNumber}
         placeholder="Phone Number"
         keyboardType="phone-pad"
+        placeholderTextColor={colorStyles.secondaryGreen}
       />
-      <View style={styles.rowContainer}>
-        <TouchableOpacity
-          onPress={() => setOpenDatePicker(true)}
-          style={styles.dateContainer}>
-          <TextInput
-            pointerEvents="none"
-            style={styles.input}
-            value={birthdaySelected ? parseBirthday(birthday) : ''}
-            editable={false}
-            placeholder={
-              !birthdaySelected ? 'Birthday' : parseBirthday(birthday)
-            }
-          />
-        </TouchableOpacity>
-        <DatePicker
-          modal
-          open={openDatePicker}
-          mode={'date'}
-          date={birthday}
-          onConfirm={date => {
-            setOpenDatePicker(false);
-            setBirthday(date);
-            setBirthdaySelected(true);
-          }}
-          onCancel={() => {
-            setOpenDatePicker(false);
-          }}
-        />
-      </View>
-      <View style={styles.buttonContainerWide}>
-        <Button
-          onPress={onSubmit}
-          title="Register"
-          color={colorStyles.secondaryText}
-          accessibilityLabel="Register for Bucketize"
-        />
-      </View>
+      <TouchableOpacity
+        onPress={() => setOpenDatePicker(true)}
+        style={styles.input}>
+        <Text style={styles.datePickerText}>
+          {birthdaySelected ? parseBirthday(birthday) : 'Birthday'}
+        </Text>
+      </TouchableOpacity>
+      <DatePicker
+        modal
+        open={openDatePicker}
+        mode={'date'}
+        date={birthday}
+        onConfirm={date => {
+          setOpenDatePicker(false);
+          setBirthday(date);
+          setBirthdaySelected(true);
+        }}
+        onCancel={() => {
+          setOpenDatePicker(false);
+        }}
+      />
+      <TouchableOpacity style={styles.buttonContainerWide} onPress={onSubmit}>
+        <Text style={styles.buttonText}>Register</Text>
+      </TouchableOpacity>
       <HorizontalRuleWithText text={'or'} />
-      <View style={styles.buttonContainerWideAlt}>
-        <Button
-          onPress={() => navigation.navigate('Login')}
-          title="Login"
-          color={colorStyles.secondaryAccent}
-          accessibilityLabel="Login to Bucketize"
-        />
-      </View>
+      <TouchableOpacity
+        style={styles.buttonContainerWideAlt}
+        onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.buttonTextAlt}>Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
