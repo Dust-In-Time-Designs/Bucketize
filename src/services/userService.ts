@@ -1,5 +1,6 @@
 import {API_URL} from '@env';
 import {CreateUser, User} from '../models/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const handleRegister = async (user: CreateUser) => {
   const response = await fetch(`${API_URL}/api/auth/register`, {
@@ -59,6 +60,7 @@ export const handleLogout = async () => {
     },
   });
   const data = await response.json();
+  AsyncStorage.removeItem('sb-pkotgkvsnarjmufqcwxj-auth-token');
   if (response.status !== 200) {
     console.log(data.error);
   } else {

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {handleRegister} from '../services/userService';
@@ -10,8 +10,10 @@ import HorizontalRuleWithText from '../components/horizontalRule';
 import {RegisterScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
 import {State} from '../store/reducers';
+import {authAction} from '../store/actions';
 
 const RegisterScreen = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation<RegisterScreenRouteProp>();
   const {authUser} = useSelector((state: State) => state.auth);
   const [firstName, setFirstName] = useState('');
@@ -28,9 +30,20 @@ const RegisterScreen = () => {
     const jsonValue = await AsyncStorage.getItem(
       'sb-pkotgkvsnarjmufqcwxj-auth-token',
     );
+    const userData = JSON.parse(jsonValue);
+
     if (jsonValue != null) {
-      console.log('already authenticated');
-      navigation.navigate('Dashboard');
+      const user = {
+        id: userData.user.id,
+        firstName: userData.user.user_metadata.firstName,
+        lastName: userData.user.user_metadata.lastName,
+        email: userData.user.email,
+        phoneNumber: userData.user.user_metadata.phoneNumber,
+        birthday: userData.user.user_metadata.birthday,
+        accessToken: userData.user.id.access_token,
+      };
+      dispatch(authAction.loginUser(user));
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
   };
 
@@ -58,9 +71,9 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     getAuthUser();
-
+    console.log(authUser);
     if (authUser) {
-      navigation.replace('LoggedIn');
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
   }, [navigation, authUser]);
 

@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector} from 'react-redux';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {useDispatch} from 'react-redux';
@@ -18,19 +19,40 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const getAuthUser = async () => {
+    const jsonValue = await AsyncStorage.getItem(
+      'sb-pkotgkvsnarjmufqcwxj-auth-token',
+    );
+    const userData = JSON.parse(jsonValue);
+    if (jsonValue != null) {
+      const user = {
+        id: userData.user.id,
+        firstName: userData.user.user_metadata.firstName,
+        lastName: userData.user.user_metadata.lastName,
+        email: userData.user.email,
+        phoneNumber: userData.user.user_metadata.phoneNumber,
+        birthday: userData.user.user_metadata.birthday,
+        accessToken: userData.user.id.access_token,
+      };
+      dispatch(authAction.loginUser(user));
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
+    }
+  };
+
   const onSubmit = async () => {
     const user = await handleLogin(email, password);
     if (user) {
       dispatch(authAction.loginUser(user));
-      navigation.navigate('Dashboard');
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     } else {
       setError('Invalid Credentials');
     }
   };
 
   useEffect(() => {
+    getAuthUser();
     if (authUser) {
-      navigation.replace('LoggedIn');
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
   }, [navigation, authUser]);
 

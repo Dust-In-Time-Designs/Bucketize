@@ -29,7 +29,7 @@ const PlaidScreen = () => {
     if (user) {
       const token = await handleRetrieveAccessToken(user.accessToken);
       if (token) {
-        navigation.navigate('WalletDetails');
+        navigation.navigate('LoggedIn', {screen: 'Dashboard'});
       }
     }
   }, [navigation, user]);
@@ -42,7 +42,7 @@ const PlaidScreen = () => {
   }, [linkToken, createLinkToken, user, checkForPlaidItem]);
 
   return (
-    <View style={styles.screenContainerLight}>
+    <View style={styles.plaidContainer}>
       {linkToken && (
         <PlaidLink
           tokenConfig={{
@@ -50,7 +50,7 @@ const PlaidScreen = () => {
             noLoadingState: false,
           }}
           onSuccess={async () => {
-            navigation.navigate('WalletDetails');
+            navigation.navigate('LoggedIn', {screen: 'Dashboard'});
           }}
           onExit={response => {
             console.log(response);

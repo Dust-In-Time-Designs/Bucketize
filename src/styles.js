@@ -132,6 +132,11 @@ export const styles = StyleSheet.create({
   },
   plaidContainer: {
     backgroundColor: colorStyles.primaryGreen,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    width: '100%',
   },
   plaidTextView: {
     width: '100%',
@@ -151,7 +156,7 @@ export const styles = StyleSheet.create({
     height: '80%',
   },
   plaidButtonText: {
-    color: colorStyles.offWhite,
+    color: colorStyles.primaryGreen,
     fontWeight: '600',
     fontSize: 20,
   },
