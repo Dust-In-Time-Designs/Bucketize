@@ -131,7 +131,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   plaidContainer: {
-    backgroundColor: colorStyles.primaryGreen,
+    backgroundColor: colorStyles.offWhite,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -166,7 +166,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 40,
     paddingVertical: 15,
-    backgroundColor: colorStyles.primaryBlue,
+    backgroundColor: colorStyles.accentBlue,
     borderRadius: 10,
   },
   balanceItemContainer: {

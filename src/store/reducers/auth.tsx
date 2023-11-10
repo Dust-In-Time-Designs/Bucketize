@@ -14,6 +14,7 @@ type Action = {
 export default (state: any = initialState, action: Action) => {
   switch (action.type) {
     case AUTH_LOGIN:
+      console.log('payload', action.payload)
       return Object.assign({}, state, {
         user: action.payload,
       });

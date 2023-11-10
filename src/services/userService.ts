@@ -24,6 +24,8 @@ export const handleRegister = async (user: CreateUser) => {
         id: data.id,
         accessToken: data.accessToken,
       };
+      AsyncStorage.setItem('user', JSON.stringify(authUser));
+
       return {user: authUser};
     } else {
       return {error: data.error || 'An error occurred during registration.'};
@@ -43,6 +45,7 @@ export const handleLogin = async (email: string, password: string) => {
     body: JSON.stringify({email, password}),
   });
   const data = await response.json();
+  console.log('login call: ', data);
   if (response.status !== 200) {
     console.log(data.error);
   } else {

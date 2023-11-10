@@ -7,7 +7,6 @@ import {PlaidAccount} from '../types';
 
 const Balance = () => {
   const [data, setData] = useState<PlaidAccount[] | null>(null);
-
   useEffect(() => {
     const fetchData = async () => {
       if (data == null) {

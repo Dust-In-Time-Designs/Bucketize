@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useSelector, useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {handleRegister} from '../services/userService';
@@ -9,7 +9,6 @@ import {colorStyles, styles} from '../styles';
 import HorizontalRuleWithText from '../components/horizontalRule';
 import {RegisterScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
-import {State} from '../store/reducers';
 import {authAction} from '../store/actions';
 import {User} from '../models/user';
 
@@ -52,6 +51,7 @@ const RegisterScreen = () => {
         accessToken: userData.access_token,
       };
       setAuthUser(user);
+      console.log('dispatching this user from register: ', user)
       dispatch(authAction.loginUser(user));
       navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }

@@ -52,22 +52,23 @@ router.post('/create_link_token', async function (request, response, next) {
 
     // Attempt to create a Plaid link token
     const createTokenResponse = await client.linkTokenCreate(configs);
-    response.json(createTokenResponse);
+    const {link_token, expiration, request_id} = createTokenResponse.data;
+
+    // Send only the necessary data to the client
+    response.json({link_token, expiration, request_id});
   } catch (err) {
-    console.log('error: ', err.message);
+    console.error('error: ', err.message);
+    const errorResponse = {
+      message: 'An error occurred',
+      details: err.message,
+    };
     if (err.message === 'Failed to fetch user data from the database.') {
-      response.status(500).json({message: err.message});
+      response.status(500).json(errorResponse);
     } else if (err.message === 'User not found.') {
-      response.status(404).json({message: err.message});
-    } else if (
-      err.message.startsWith('Failed to create link token with Plaid.')
-    ) {
-      response.status(500).json({
-        message: 'Failed to create link token with Plaid.',
-        details: err.message,
-      });
+      response.status(404).json(errorResponse);
     } else {
-      next(err);
+      console.error(err);
+      response.status(500).json(errorResponse);
     }
   }
 });
@@ -138,8 +139,10 @@ const getAllTransactions = async token => {
 };
 
 router.post('/initialize_data', async function (request, response, next) {
+  console.log('initializing data')
   try {
     const PUBLIC_TOKEN = request.body.public_token;
+    console.log('public token', PUBLIC_TOKEN)
     if (!PUBLIC_TOKEN) {
       return response.status(400).json({error: 'Public token not provided'});
     }
@@ -147,6 +150,7 @@ router.post('/initialize_data', async function (request, response, next) {
     const tokenResponse = await client.itemPublicTokenExchange({
       public_token: PUBLIC_TOKEN,
     });
+    console.log('token response:', tokenResponse)
     if (!tokenResponse || !tokenResponse.data) {
       throw new Error('Invalid public token provided');
     }
@@ -155,7 +159,7 @@ router.post('/initialize_data', async function (request, response, next) {
     const {data: user, error: userError} = await supabase
       .from('users')
       .select();
-
+    console.log('user: ', user, 'user error: ', userError);
     if (userError) {
       throw new Error('Failed to fetch user data');
     }
@@ -181,6 +185,8 @@ router.post('/initialize_data', async function (request, response, next) {
     const balanceRes = await client.accountsBalanceGet({
       access_token: ACCESS_TOKEN,
     });
+    console.log('transactions: ', transactions);
+    console.log('balanceRes: ', balanceRes);
 
     if (!balanceRes || !balanceRes.data) {
       throw new Error('Failed to get account balances');
@@ -191,6 +197,8 @@ router.post('/initialize_data', async function (request, response, next) {
       plaid_item_id: tokenResponse.data.item_id,
       status: 'good',
     });
+
+    console.log('item: ', item, 'item error: ', itemError);
 
     if (itemError) {
       throw new Error('Failed to insert item data');
@@ -206,6 +214,7 @@ router.post('/initialize_data', async function (request, response, next) {
         type: account.type,
         subtype: account.subtype,
         balances: account.balances,
+        user_id: user[0].user_id,
       });
 
       if (accountError) {
@@ -314,6 +323,7 @@ router.get('/identity', function (request, response, next) {
 router.get('/balance', async function (request, response, next) {
   try {
     const {data, error} = await supabase.from('accounts').select();
+    console.log(data, error);
     if (error) throw error;
     response.json(data);
   } catch (err) {

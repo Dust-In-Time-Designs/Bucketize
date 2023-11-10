@@ -49,7 +49,7 @@ function App() {
       <StatusBar barStyle={'dark-content'} />
       <NavigationContainer>
         <RootStack.Navigator
-          initialRouteName="Register"
+          initialRouteName="Login"
           screenOptions={{
             headerShown: false,
           }}>

@@ -15,8 +15,7 @@ const DashboardScreen = () => {
   const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
   const [data, setData] = useState<PlaidAccount[] | null>(null);
-  console.log('this is data:', data);
-
+  console.log(data)
   const fetchData = async () => {
     if (data == null) {
       const balance = await handleGetBalance();
@@ -32,13 +31,13 @@ const DashboardScreen = () => {
     }
   }, [navigation, user, data]);
 
+
   return (
     <View style={styles.screenContainerLight}>
       <Text style={styles.titleText}>
         {user && `Welcome ${user.firstName} ${user.lastName}!`}
       </Text>
-      <PlaidScreen />
-      {/* {!data ? <PlaidScreen /> : <Balance />} */}
+      {!data?.length ? <PlaidScreen /> : <Balance />}
 
       <LogoutButton />
     </View>
