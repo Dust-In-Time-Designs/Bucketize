@@ -52,22 +52,23 @@ router.post('/create_link_token', async function (request, response, next) {
 
     // Attempt to create a Plaid link token
     const createTokenResponse = await client.linkTokenCreate(configs);
-    response.json(createTokenResponse);
+    const {link_token, expiration, request_id} = createTokenResponse.data;
+
+    // Send only the necessary data to the client
+    response.json({link_token, expiration, request_id});
   } catch (err) {
-    console.log('error: ', err.message);
+    console.error('error: ', err.message);
+    const errorResponse = {
+      message: 'An error occurred',
+      details: err.message,
+    };
     if (err.message === 'Failed to fetch user data from the database.') {
-      response.status(500).json({message: err.message});
+      response.status(500).json(errorResponse);
     } else if (err.message === 'User not found.') {
-      response.status(404).json({message: err.message});
-    } else if (
-      err.message.startsWith('Failed to create link token with Plaid.')
-    ) {
-      response.status(500).json({
-        message: 'Failed to create link token with Plaid.',
-        details: err.message,
-      });
+      response.status(404).json(errorResponse);
     } else {
-      next(err);
+      console.error(err);
+      response.status(500).json(errorResponse);
     }
   }
 });
@@ -155,7 +156,6 @@ router.post('/initialize_data', async function (request, response, next) {
     const {data: user, error: userError} = await supabase
       .from('users')
       .select();
-
     if (userError) {
       throw new Error('Failed to fetch user data');
     }
@@ -206,6 +206,7 @@ router.post('/initialize_data', async function (request, response, next) {
         type: account.type,
         subtype: account.subtype,
         balances: account.balances,
+        user_id: user[0].user_id,
       });
 
       if (accountError) {

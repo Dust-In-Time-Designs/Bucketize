@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useSelector} from 'react-redux';
-import {Button, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {handleRegister} from '../services/userService';
 import {CreateUser} from '../models/user';
@@ -9,11 +9,13 @@ import {colorStyles, styles} from '../styles';
 import HorizontalRuleWithText from '../components/horizontalRule';
 import {RegisterScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
-import {State} from '../store/reducers';
+import {authAction} from '../store/actions';
+import {User} from '../models/user';
 
 const RegisterScreen = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation<RegisterScreenRouteProp>();
-  const {authUser} = useSelector((state: State) => state.auth);
+  const [authUser, setAuthUser] = useState<User | null>();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,13 +26,33 @@ const RegisterScreen = () => {
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [error, setError] = useState('');
 
+  const validateEmail = email => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const calculateAge = birthday => {
+    const ageDifMs = Date.now() - birthday.getTime();
+    const ageDate = new Date(ageDifMs); // milliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  };
+
   const getAuthUser = async () => {
-    const jsonValue = await AsyncStorage.getItem(
-      'sb-pkotgkvsnarjmufqcwxj-auth-token',
-    );
+    const jsonValue = await AsyncStorage.getItem('user');
+    const userData = JSON.parse(jsonValue);
     if (jsonValue != null) {
-      console.log('already authenticated');
-      navigation.navigate('Dashboard');
+      const user = {
+        id: userData.id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber,
+        birthday: userData.birthday,
+        accessToken: userData.access_token,
+      };
+      setAuthUser(user);
+      dispatch(authAction.loginUser(user));
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
   };
 
@@ -40,6 +62,32 @@ const RegisterScreen = () => {
   };
 
   const onSubmit = async () => {
+    setError('');
+    if (!firstName.trim()) {
+      setError('First Name is required.');
+      return;
+    }
+    if (!lastName.trim()) {
+      setError('Last Name is required.');
+      return;
+    }
+    if (!email.trim() || !validateEmail(email)) {
+      setError('A valid Email is required.');
+      return;
+    }
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+    if (!phoneNumber.trim()) {
+      setError('Phone Number is required.');
+      return;
+    }
+    if (calculateAge(new Date(birthday)) < 18) {
+      setError('You must be at least 18 years old.');
+      return;
+    }
+
     const user: CreateUser = {
       firstName,
       lastName,
@@ -48,111 +96,100 @@ const RegisterScreen = () => {
       birthday,
       password,
     };
-    const newUser = await handleRegister(user);
-    if (newUser) {
-      console.log(newUser);
+    const result = await handleRegister(user);
+
+    if (result.user) {
+      dispatch(authAction.loginUser(result.user));
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     } else {
-      setError('Please fill out all fields');
+      setError(result.error);
     }
   };
 
   useEffect(() => {
     getAuthUser();
-
     if (authUser) {
-      navigation.navigate('Dashboard');
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
-  }, [navigation, authUser]);
+  }, [navigation]);
 
   return (
     <View style={styles.screenContainerLight}>
-      <View>
-        <Text style={styles.appTitleText}>Hey There!</Text>
+      <Text style={styles.titleText}>Hey There!</Text>
+      {error && <Text style={styles.errorText}>{error}</Text>}
+      <View style={styles.inputRow}>
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setFirstName}
+          value={firstName}
+          placeholder="First Name"
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setLastName}
+          value={lastName}
+          placeholder="Last Name"
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
       </View>
-      {error && (
-        <View>
-          <Text>{error}</Text>
-        </View>
-      )}
-      <TextInput
-        style={styles.input}
-        onChangeText={setFirstName}
-        value={firstName}
-        placeholder="First Name"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setLastName}
-        value={lastName}
-        placeholder="Last Name"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        placeholder="Email"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setPassword}
-        value={password}
-        placeholder="Password"
-        secureTextEntry={true}
-      />
+      <View style={styles.inputRow}>
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setEmail}
+          value={email}
+          placeholder="Email"
+          keyboardType="email-address"
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
+        <TextInput
+          style={styles.inputShort}
+          onChangeText={setPassword}
+          value={password}
+          placeholder="Password"
+          secureTextEntry={true}
+          placeholderTextColor={colorStyles.secondaryGreen}
+        />
+      </View>
+
       <TextInput
         style={styles.input}
         onChangeText={setPhoneNumber}
         value={phoneNumber}
         placeholder="Phone Number"
         keyboardType="phone-pad"
+        placeholderTextColor={colorStyles.secondaryGreen}
       />
-      <View style={styles.rowContainer}>
-        <TouchableOpacity
-          onPress={() => setOpenDatePicker(true)}
-          style={styles.dateContainer}>
-          <TextInput
-            pointerEvents="none"
-            style={styles.input}
-            value={birthdaySelected ? parseBirthday(birthday) : ''}
-            editable={false}
-            placeholder={
-              !birthdaySelected ? 'Birthday' : parseBirthday(birthday)
-            }
-          />
-        </TouchableOpacity>
-        <DatePicker
-          modal
-          open={openDatePicker}
-          mode={'date'}
-          date={birthday}
-          onConfirm={date => {
-            setOpenDatePicker(false);
-            setBirthday(date);
-            setBirthdaySelected(true);
-          }}
-          onCancel={() => {
-            setOpenDatePicker(false);
-          }}
-        />
-      </View>
-      <View style={styles.buttonContainerWide}>
-        <Button
-          onPress={onSubmit}
-          title="Register"
-          color={colorStyles.secondaryText}
-          accessibilityLabel="Register for Bucketize"
-        />
-      </View>
+      <TouchableOpacity
+        onPress={() => setOpenDatePicker(true)}
+        style={styles.input}>
+        <Text style={styles.datePickerText}>
+          {birthdaySelected ? parseBirthday(birthday) : 'Birthday'}
+        </Text>
+      </TouchableOpacity>
+      <DatePicker
+        modal
+        open={openDatePicker}
+        mode={'date'}
+        date={birthday}
+        onConfirm={date => {
+          setOpenDatePicker(false);
+          setBirthday(date);
+          setBirthdaySelected(true);
+        }}
+        onCancel={() => {
+          setOpenDatePicker(false);
+        }}
+      />
+      <TouchableOpacity style={styles.buttonContainerWide} onPress={onSubmit}>
+        <Text style={styles.buttonText}>Register</Text>
+      </TouchableOpacity>
       <HorizontalRuleWithText text={'or'} />
-      <View style={styles.buttonContainerWideAlt}>
-        <Button
-          onPress={() => navigation.navigate('Login')}
-          title="Login"
-          color={colorStyles.secondaryAccent}
-          accessibilityLabel="Login to Bucketize"
-        />
-      </View>
+      <TouchableOpacity
+        style={styles.buttonContainerWideAlt}
+        onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.buttonTextAlt}>Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };

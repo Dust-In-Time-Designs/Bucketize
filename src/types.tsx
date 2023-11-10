@@ -1,13 +1,27 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
+import {NavigatorScreenParams} from '@react-navigation/native';
+
+export type BottomTabParamList = {
+  Dashboard: undefined;
+  Transactions: undefined;
+};
+
+export type DashboardTabScreenRouteProp = RouteProp<
+  BottomTabParamList,
+  'Dashboard'
+>;
+export type TransactionScreenRouteProp = RouteProp<
+  BottomTabParamList,
+  'Transactions'
+>;
 
 export type RootStackParamList = {
   Home: undefined;
   Register: undefined;
   Login: undefined;
-  Dashboard: undefined;
-  WalletDetails: undefined;
   Plaid: undefined;
+  LoggedIn: NavigatorScreenParams<BottomTabParamList> | undefined;
 };
 
 export type HomeScreenRouteProp = StackNavigationProp<
@@ -26,21 +40,14 @@ export type LoginScreenRouteProp = StackNavigationProp<
 >;
 
 export type DashboardScreenRouteProp = StackNavigationProp<
-  RootStackParamList,
+  BottomTabParamList,
   'Dashboard'
 >;
-
-export type WalletDetailsScreenRouteProp = {
-  navigation: StackNavigationProp<RootStackParamList, 'WalletDetails'>;
-  route: RouteProp<RootStackParamList, 'WalletDetails'>;
-};
 
 export type PlaidScreenRouteProp = StackNavigationProp<
   RootStackParamList,
   'Plaid'
 >;
-
-export type WalletDetails = {accessToken: string; itemId: string};
 
 export type PlaidCounterparty = {
   name: string;

@@ -95,7 +95,7 @@ PODS:
   - hermes-engine/Pre-built (0.72.5)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
-  - Plaid (4.6.5)
+  - Plaid (4.7.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -398,8 +398,8 @@ PODS:
     - glog
   - react-native-date-picker (4.3.3):
     - React-Core
-  - react-native-plaid-link-sdk (10.6.2):
-    - Plaid (~> 4.6.4)
+  - react-native-plaid-link-sdk (10.8.0):
+    - Plaid (~> 4.7.0)
     - React-Core
   - react-native-safe-area-context (4.7.2):
     - React-Core
@@ -524,6 +524,9 @@ PODS:
     - React-RCTImage
   - RNSVG (13.14.0):
     - React-Core
+  - RNVectorIcons (10.0.2):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -604,6 +607,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -728,6 +732,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  RNVectorIcons:
+    :path: "../node_modules/react-native-vector-icons"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -756,7 +762,7 @@ SPEC CHECKSUMS:
   hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  Plaid: 712ca97865cd6ea2f603de9c038c244840c9ad26
+  Plaid: 431ef9be5314a1345efb451bc5e6b067bfb3b4c6
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: df81ab637d35fac9e6eb94611cfd20f0feb05455
   RCTTypeSafety: 4636e4a36c7c2df332bda6d59b19b41c443d4287
@@ -773,9 +779,9 @@ SPEC CHECKSUMS:
   React-jsinspector: aef73cbd43b70675f572214d10fa438c89bf11ba
   React-logger: 2e4aee3e11b3ec4fa6cfd8004610bbb3b8d6cca4
   react-native-date-picker: 1d61c76315098a6ad4c643a356f005916c7d4875
-  react-native-plaid-link-sdk: f9c328bb2c5c998c26a7bf43e8aa8e04b3244c8f
-  react-native-safe-area-context: 7aa8e6d9d0f3100a820efb1a98af68aa747f9284
-  react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
+  react-native-plaid-link-sdk: 6b7a5f7b784e11a6dd423b4fc4df4c34be48f180
+  react-native-safe-area-context: 5afd8138cecdaabe464bc641df684ac33382b4a1
+  react-native-sqlite-storage: 6df009b8b67fe34c57c5fd06ee8fff7669fece6d
   React-NativeModulesApple: 797bc6078d566eef3fb3f74127e6e1d2e945a15f
   React-perflogger: cd8886513f68e1c135a1e79d20575c6489641597
   React-RCTActionSheet: 726d2615ca62a77ce3e2c13d87f65379cdc73498
@@ -793,10 +799,11 @@ SPEC CHECKSUMS:
   React-runtimescheduler: cc32add98c45c5df18436a6a52a7e1f6edec102c
   React-utils: 7a9918a1ffdd39aba67835d42386f592ea3f8e76
   ReactCommon: 91ece8350ebb3dd2be9cef662abd78b6948233c0
-  RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
+  RNCAsyncStorage: 99ccc5d8a0acd7ec3b2663c50aa812ad8bb2f3e1
   RNGestureHandler: 38aa38413896620338948fbb5c90579a7b1c3fde
   RNScreens: 85d3880b52d34db7b8eeebe2f1a0e807c05e69fa
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
+  RNVectorIcons: 23b6e11af4aaf104d169b1b0afa7e5cf96c676ce
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 86fed2e4d425ee4c6eab3813ba1791101ee153c6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

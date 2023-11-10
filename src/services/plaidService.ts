@@ -162,7 +162,6 @@ const handleGetItems = async (authToken: string, plaidAccessToken: string) => {
         Authorization: `Bearer ${authToken}`,
       },
     });
-    console.log(response);
     const data = await response.json();
     return data;
   } catch (error) {

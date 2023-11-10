@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import {styles} from '../styles';
 import {
   handleCreateLinkToken,
-  handleRetrieveAccessToken,
+  handleInitializeData,
 } from '../services/plaidService';
 import {PlaidScreenRouteProp} from '../types';
 import {State} from '../store/reducers';
@@ -15,7 +15,6 @@ const PlaidScreen = () => {
   const navigation: PlaidScreenRouteProp = useNavigation();
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const {user} = useSelector((state: State) => state.auth);
-
   const createLinkToken = useCallback(async () => {
     try {
       const data = await handleCreateLinkToken(user.accessToken);
@@ -25,39 +24,30 @@ const PlaidScreen = () => {
     }
   }, [setLinkToken, user]);
 
-  const checkForPlaidItem = useCallback(async () => {
-    if (user) {
-      const token = await handleRetrieveAccessToken(user.accessToken);
-      if (token) {
-        navigation.navigate('WalletDetails');
-      }
-    }
-  }, [navigation, user]);
-
   useEffect(() => {
     if (linkToken == null && user) {
       createLinkToken();
-      checkForPlaidItem();
     }
-  }, [linkToken, createLinkToken, user, checkForPlaidItem]);
+  }, [linkToken, createLinkToken, user]);
 
   return (
-    <View style={styles.plaidButtonContainer}>
+    <View style={styles.plaidContainer}>
       {linkToken && (
         <PlaidLink
           tokenConfig={{
             token: linkToken,
             noLoadingState: false,
           }}
-          onSuccess={async () => {
-            navigation.navigate('WalletDetails');
+          onSuccess={async success => {
+            await handleInitializeData(success.publicToken);
+            navigation.navigate('LoggedIn', {screen: 'Transactions'});
           }}
           onExit={response => {
             console.log(response);
           }}>
           <View style={styles.plaidButton}>
             <Text style={styles.plaidButtonText}>Connect Bank Accounts</Text>
-            <Image source={require('../assets/next.png')} />
+            <Image source={require('../assets/next.png')} style={styles.icon} />
           </View>
         </PlaidLink>
       )}
