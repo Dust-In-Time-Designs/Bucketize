@@ -5,7 +5,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Provider} from 'react-redux';
 import {RootStackParamList} from './src/types';
 import {StatusBar} from 'react-native';
-import {Ionicons} from 'react-native-vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import store from './src/store';
 import HomeScreen from './src/screens/Home';
 import RegisterScreen from './src/screens/Register';
@@ -14,6 +14,8 @@ import DashboardScreen from './src/screens/Dashboard';
 import PlaidScreen from './src/screens/Plaid';
 import {colorStyles} from './src/styles';
 import TransactionsScreen from './src/screens/Transactions';
+import BudgetScreen from './src/screens/Budget';
+import CreateBudgetScreen from './src/screens/CreateBudget';
 
 export const RootStack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -32,13 +34,23 @@ function LoggedInTabs() {
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
-        // options={{
-        //   tabBarIcon: ({color, size}) => (
-        //     <Ionicons name="ios-home" color={color} size={size} />
-        //   ),
-        // }}
+        options={{
+          tabBarIcon: ({color, size}) => (
+            <Ionicons name="ios-home" color={color} size={size} />
+          ),
+        }}
       />
       <Tab.Screen name="Transactions" component={TransactionsScreen} />
+      <Tab.Screen
+        name="Budget"
+        component={BudgetScreen}
+        options={{
+          tabBarLabel: 'Budget',
+          tabBarIcon: ({color, size}) => (
+            <Ionicons name="ios-wallet" color={color} size={size} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -58,6 +70,10 @@ function App() {
           <RootStack.Screen name="Login" component={LoginScreen} />
           <RootStack.Screen name="Plaid" component={PlaidScreen} />
           <RootStack.Screen name="LoggedIn" component={LoggedInTabs} />
+          <RootStack.Screen
+            name="CreateBudget"
+            component={CreateBudgetScreen}
+          />
         </RootStack.Navigator>
       </NavigationContainer>
     </Provider>

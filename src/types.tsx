@@ -5,6 +5,7 @@ import {NavigatorScreenParams} from '@react-navigation/native';
 export type BottomTabParamList = {
   Dashboard: undefined;
   Transactions: undefined;
+  Budget: undefined;
 };
 
 export type DashboardTabScreenRouteProp = RouteProp<
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   Login: undefined;
   Plaid: undefined;
   LoggedIn: NavigatorScreenParams<BottomTabParamList> | undefined;
+  CreateBudget: undefined;
 };
 
 export type HomeScreenRouteProp = StackNavigationProp<
@@ -47,6 +49,11 @@ export type DashboardScreenRouteProp = StackNavigationProp<
 export type PlaidScreenRouteProp = StackNavigationProp<
   RootStackParamList,
   'Plaid'
+>;
+
+export type CreateBudgetScreenRouteProp = StackNavigationProp<
+  RootStackParamList,
+  'CreateBudget'
 >;
 
 export type PlaidCounterparty = {

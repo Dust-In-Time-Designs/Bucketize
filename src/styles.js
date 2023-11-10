@@ -341,4 +341,27 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#F6F4F3',
   },
+  balanceCardText: {
+    fontSize: 18,
+    color: colorStyles.textOnPrimary,
+    fontWeight: 'bold',
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentContainer: {
+    padding: 20,
+  },
+  categoryContainer: {
+    padding: 10,
+    borderBottomColor: colorStyles.secondaryGreen,
+    borderBottomWidth: 1,
+  },
+  scrollContentContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
 });
