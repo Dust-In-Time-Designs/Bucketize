@@ -51,7 +51,6 @@ const RegisterScreen = () => {
         accessToken: userData.access_token,
       };
       setAuthUser(user);
-      console.log('dispatching this user from register: ', user)
       dispatch(authAction.loginUser(user));
       navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }

@@ -15,7 +15,6 @@ const DashboardScreen = () => {
   const navigation = useNavigation<DashboardScreenRouteProp>();
   const {user} = useSelector((state: State) => state.auth);
   const [data, setData] = useState<PlaidAccount[] | null>(null);
-  console.log(data)
   const fetchData = async () => {
     if (data == null) {
       const balance = await handleGetBalance();

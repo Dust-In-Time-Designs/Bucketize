@@ -17,7 +17,6 @@ const PlaidScreen = () => {
   const {user} = useSelector((state: State) => state.auth);
   const createLinkToken = useCallback(async () => {
     try {
-      console.log(user.accessToken);
       const data = await handleCreateLinkToken(user.accessToken);
       setLinkToken(data);
     } catch (err) {

@@ -52,7 +52,6 @@ const handleInitializeData = async (publicToken: string) => {
       body: JSON.stringify({public_token: publicToken}),
     });
     const data = await response.json();
-    console.log('initialize data: ', data)
     return data;
   } catch (error) {
     console.error(error);

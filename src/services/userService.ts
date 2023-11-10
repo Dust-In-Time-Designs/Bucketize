@@ -45,7 +45,6 @@ export const handleLogin = async (email: string, password: string) => {
     body: JSON.stringify({email, password}),
   });
   const data = await response.json();
-  console.log('login call: ', data);
   if (response.status !== 200) {
     console.log(data.error);
   } else {
