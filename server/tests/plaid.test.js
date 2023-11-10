@@ -149,9 +149,11 @@ describe('Plaid Routes', () => {
     it('should create a link token', async () => {
       mockSupabase.select.resolves({data: [mockUser], error: null});
       client.linkTokenCreate.resolves({
-        link_token: 'sample_token',
-        expiration: '2023-10-31T20:38:48Z',
-        request_id: 'some_request_id',
+        data: {
+          link_token: 'sample_token',
+          expiration: '2023-10-31T20:38:48Z',
+          request_id: 'some_request_id',
+        },
       });
 
       const response = await request(app).post('/api/plaid/create_link_token');
@@ -165,7 +167,7 @@ describe('Plaid Routes', () => {
       const response = await request(app).post('/api/plaid/create_link_token');
       expect(response.status).to.equal(500);
       expect(response.body).to.have.property(
-        'message',
+        'details',
         'Failed to fetch user data from the database.',
       );
     });
