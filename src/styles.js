@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
     height: '80%',
   },
   plaidButtonText: {
-    color: colorStyles.primaryGreen,
+    color: colorStyles.offWhite,
     fontWeight: '600',
     fontSize: 20,
   },

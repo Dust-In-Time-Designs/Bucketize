@@ -11,11 +11,12 @@ import {RegisterScreenRouteProp} from '../types';
 import {useNavigation} from '@react-navigation/native';
 import {State} from '../store/reducers';
 import {authAction} from '../store/actions';
+import {User} from '../models/user';
 
 const RegisterScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<RegisterScreenRouteProp>();
-  const {authUser} = useSelector((state: State) => state.auth);
+  const [authUser, setAuthUser] = useState<User | null>();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -26,22 +27,31 @@ const RegisterScreen = () => {
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [error, setError] = useState('');
 
-  const getAuthUser = async () => {
-    const jsonValue = await AsyncStorage.getItem(
-      'sb-pkotgkvsnarjmufqcwxj-auth-token',
-    );
-    const userData = JSON.parse(jsonValue);
+  const validateEmail = email => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
+  const calculateAge = birthday => {
+    const ageDifMs = Date.now() - birthday.getTime();
+    const ageDate = new Date(ageDifMs); // milliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  };
+
+  const getAuthUser = async () => {
+    const jsonValue = await AsyncStorage.getItem('user');
+    const userData = JSON.parse(jsonValue);
     if (jsonValue != null) {
       const user = {
-        id: userData.user.id,
-        firstName: userData.user.user_metadata.firstName,
-        lastName: userData.user.user_metadata.lastName,
-        email: userData.user.email,
-        phoneNumber: userData.user.user_metadata.phoneNumber,
-        birthday: userData.user.user_metadata.birthday,
-        accessToken: userData.user.id.access_token,
+        id: userData.id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber,
+        birthday: userData.birthday,
+        accessToken: userData.access_token,
       };
+      setAuthUser(user);
       dispatch(authAction.loginUser(user));
       navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
@@ -53,6 +63,32 @@ const RegisterScreen = () => {
   };
 
   const onSubmit = async () => {
+    setError('');
+    if (!firstName.trim()) {
+      setError('First Name is required.');
+      return;
+    }
+    if (!lastName.trim()) {
+      setError('Last Name is required.');
+      return;
+    }
+    if (!email.trim() || !validateEmail(email)) {
+      setError('A valid Email is required.');
+      return;
+    }
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+    if (!phoneNumber.trim()) {
+      setError('Phone Number is required.');
+      return;
+    }
+    if (calculateAge(new Date(birthday)) < 18) {
+      setError('You must be at least 18 years old.');
+      return;
+    }
+
     const user: CreateUser = {
       firstName,
       lastName,
@@ -61,21 +97,22 @@ const RegisterScreen = () => {
       birthday,
       password,
     };
-    const newUser = await handleRegister(user);
-    if (newUser) {
-      console.log(newUser);
+    const result = await handleRegister(user);
+
+    if (result.user) {
+      dispatch(authAction.loginUser(result.user));
+      navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     } else {
-      setError('Please fill out all fields');
+      setError(result.error);
     }
   };
 
   useEffect(() => {
     getAuthUser();
-    console.log(authUser);
     if (authUser) {
       navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
-  }, [navigation, authUser]);
+  }, [navigation]);
 
   return (
     <View style={styles.screenContainerLight}>

@@ -1,22 +1,24 @@
 import React from 'react';
 import {Button, View} from 'react-native';
 import {useDispatch} from 'react-redux';
+import {useNavigation, StackActions} from '@react-navigation/native';
 import {handleLogout} from '../services/userService';
 import {authAction} from '../store/actions';
 import {colorStyles, styles} from '../styles';
+
 const LogoutButton = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const onLogout = async () => {
-    const user = await handleLogout();
-    if (user) {
-      dispatch(authAction.logoutUser());
-    } else {
-      console.log('error');
-    }
+    await handleLogout();
+    dispatch(authAction.logoutUser());
+
+    navigation.dispatch(StackActions.popToTop());
   };
 
   return (
-    <View style={styles.buttonContainer}>
+    <View style={styles.buttonContainerWide}>
       <Button
         onPress={onLogout}
         title="Logout"

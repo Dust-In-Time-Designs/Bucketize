@@ -9,16 +9,19 @@ router.post('/register', async (req, res) => {
   const {data, error} = await supabase.auth.signUp({
     email,
     password,
-    data: {
-      firstName,
-      lastName,
-      phoneNumber,
-      birthday,
+    options: {
+      data: {
+        firstName,
+        lastName,
+        phoneNumber,
+        birthday,
+      },
     },
   });
 
   if (error) {
-    return res.status(500).json({error: 'Internal server error'});
+    console.log('error: ', error.message)
+    return res.status(500).json({error: error.message});
   } else {
     const user = data.user;
     const sessionUser = user?.user_metadata;
@@ -29,7 +32,7 @@ router.post('/register', async (req, res) => {
       birthday: sessionUser.birthday,
       email: user?.email,
       id: user?.id,
-      accessToken: data?.access_token,
+      accessToken: data?.session.access_token,
     };
     req.session.user = authUser;
     return res.json(authUser);

@@ -10,30 +10,32 @@ import {useNavigation} from '@react-navigation/native';
 import {colorStyles, styles} from '../styles';
 import HorizontalRuleWithText from '../components/horizontalRule';
 import {State} from '../store/reducers';
+import {User} from '../models/user';
+
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<LoginScreenRouteProp>();
-  const {authUser} = useSelector((state: State) => state.auth);
+  const [authUser, setAuthUser] = useState<User | null>();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const getAuthUser = async () => {
-    const jsonValue = await AsyncStorage.getItem(
-      'sb-pkotgkvsnarjmufqcwxj-auth-token',
-    );
+    const jsonValue = await AsyncStorage.getItem('user');
     const userData = JSON.parse(jsonValue);
     if (jsonValue != null) {
       const user = {
-        id: userData.user.id,
-        firstName: userData.user.user_metadata.firstName,
-        lastName: userData.user.user_metadata.lastName,
-        email: userData.user.email,
-        phoneNumber: userData.user.user_metadata.phoneNumber,
-        birthday: userData.user.user_metadata.birthday,
-        accessToken: userData.user.id.access_token,
+        id: userData.id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber,
+        birthday: userData.birthday,
+        accessToken: userData.access_token,
       };
+      setAuthUser(user);
       dispatch(authAction.loginUser(user));
       navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
@@ -54,7 +56,7 @@ const LoginScreen = () => {
     if (authUser) {
       navigation.navigate('LoggedIn', {screen: 'Dashboard'});
     }
-  }, [navigation, authUser]);
+  }, [navigation]);
 
   return (
     <View style={styles.screenContainerLight}>
