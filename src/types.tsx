@@ -117,6 +117,7 @@ export type PlaidTransaction = {
   personal_finance_category_icon_url: string;
   plaid_transaction_id: string;
   type: string | null;
+  user_category: string | null;
   created_at: string;
   updated_at: string;
 };

@@ -353,11 +353,14 @@ export const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 20,
+    flexDirection: 'column',
+    height: '100vh',
   },
   categoryContainer: {
     padding: 10,
     borderBottomColor: colorStyles.secondaryGreen,
     borderBottomWidth: 1,
+    color: colorStyles.primaryGreen,
   },
   scrollContentContainer: {
     alignItems: 'center',

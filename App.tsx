@@ -36,7 +36,7 @@ function LoggedInTabs() {
         component={DashboardScreen}
         options={{
           tabBarIcon: ({color, size}) => (
-            <Ionicons name="ios-home" color={color} size={size} />
+            <Ionicons name="home" color={color} size={size} />
           ),
         }}
       />
@@ -47,7 +47,7 @@ function LoggedInTabs() {
         options={{
           tabBarLabel: 'Budget',
           tabBarIcon: ({color, size}) => (
-            <Ionicons name="ios-wallet" color={color} size={size} />
+            <Ionicons name="wallet" color={color} size={size} />
           ),
         }}
       />

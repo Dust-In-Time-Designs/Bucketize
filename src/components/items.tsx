@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from '../../app/node_modules/@types/react';
 import {View, Text} from 'react-native';
 import {User} from '../models/user';
 import {handleGetItems} from '../services/plaidService';

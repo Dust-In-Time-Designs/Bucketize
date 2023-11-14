@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState} from '../../app/node_modules/@types/react';
 import {Button} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 

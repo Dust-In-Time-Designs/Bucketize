@@ -8,6 +8,9 @@ const Transactions = () => {
   const [transactionData, setTransactionData] = useState<
     PlaidTransaction[] | null
   >(null);
+  const [transactionDataToReview, setTransactionDataToReview] = useState<
+    PlaidTransaction[] | null
+  >(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -19,6 +22,19 @@ const Transactions = () => {
 
     fetchTransactions();
   }, [transactionData]);
+
+  // useEffect(() => {
+  //   const checkForReviews = () => {
+  //     if (transactionData) {
+  //       const toReview = transactionData.filter(
+  //         transaction => !transaction.user_category,
+  //       );
+  //       setTransactionDataToReview(toReview);
+  //     }
+  //     console.log(transactionDataToReview);
+  //   };
+  //   checkForReviews();
+  // }, [transactionDataToReview]);
 
   const renderItem = ({item}: {item: PlaidTransaction}) => {
     return (
